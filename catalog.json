@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "integrations": [
+    {
+      "id": "github",
+      "title": "GitHub",
+      "description": "Shared GitHub integration bundle installed as Codex plugins, Claude Code plugins, and Gemini CLI extensions.",
+      "version": "0.1.0",
+      "sourceDir": "plugins/github",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["github", "coding"],
+      "groups": ["source-control", "coding"]
+    },
+    {
+      "id": "vercel",
+      "title": "Vercel",
+      "description": "Shared Vercel integration bundle installed as Codex plugins, Claude Code plugins, and Gemini CLI extensions.",
+      "version": "0.21.0",
+      "sourceDir": "plugins/vercel",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["vercel", "deployment"],
+      "groups": ["cloud", "deployment"]
+    }
+  ]
+}

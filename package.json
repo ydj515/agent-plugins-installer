@@ -1,0 +1,43 @@
+{
+  "name": "agent-plugins-installer",
+  "version": "0.1.0",
+  "description": "Install bundled plugins and extensions for Codex, Claude Code, and Gemini CLI.",
+  "type": "module",
+  "bin": {
+    "agent-plugins-installer": "./src/cli.js"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "src",
+    "catalog.json",
+    "plugins",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node ./src/cli.js",
+    "test": "node --test",
+    "test:node20": "mise run test-node20",
+    "test:node22": "mise run test-node22",
+    "test:node24": "mise run test-node24",
+    "test:matrix": "mise run test-matrix",
+    "pack": "mise run pack",
+    "verify": "mise run verify"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "agent-plugins",
+    "codex",
+    "claude-code",
+    "gemini-cli",
+    "installer",
+    "plugins",
+    "extensions"
+  ],
+  "license": "MIT"
+}

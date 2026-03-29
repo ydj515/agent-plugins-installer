@@ -1,0 +1,20 @@
+.DS_Store
+node_modules/
+
+# Local project-scope install outputs
+.codex/
+.claude/
+.gemini/
+.agents/
+
+# Packaged tarballs
+*.tgz
+
+# Coverage outputs
+coverage/
+.nyc_output/
+
+# Local scratch directories
+tmp/
+.tmp/
+.temp/
