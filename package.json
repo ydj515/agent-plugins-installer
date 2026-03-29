@@ -1,6 +1,6 @@
 {
   "name": "agent-plugins-installer",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Install bundled plugins and extensions for Codex, Claude Code, and Gemini CLI.",
   "type": "module",
   "bin": {
@@ -8,11 +8,11 @@
   },
   "files": [
     "CHANGELOG.md",
+    "README.md",
     "LICENSE",
     "src",
     "catalog.json",
-    "plugins",
-    "docs"
+    "plugins"
   ],
   "engines": {
     "node": ">=20.0.0"

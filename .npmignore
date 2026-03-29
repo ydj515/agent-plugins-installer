@@ -1,0 +1,18 @@
+# 개발/메타
+.git
+.github
+.gitignore
+
+# 테스트/문서
+test
+docs
+
+# 로컬 환경
+mise.toml
+
+# 빌드 아티팩트
+*.tgz
+node_modules
+
+# 기타
+*.log
