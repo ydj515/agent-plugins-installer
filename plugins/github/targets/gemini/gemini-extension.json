@@ -1,0 +1,6 @@
+{
+  "name": "github",
+  "version": "0.1.0",
+  "description": "GitHub workflows for Gemini CLI using gh CLI and local git context.",
+  "contextFileName": "GEMINI.md"
+}
