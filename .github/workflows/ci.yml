@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 20
+          - 22
+          - 24
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://registry.npmjs.org
+
+      - name: Show Node and npm versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Run tests
+        run: npm test
+
+      - name: Verify pack output
+        run: npm pack --dry-run
+
+      - name: Pack tarball
+        id: pack
+        run: |
+          TARBALL="$(npm pack --silent)"
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+
+      - name: Verify packed tarball with npx smoke test
+        run: |
+          PROJECT_DIR="${RUNNER_TEMP}/agent-skills-installer-smoke-${{ matrix.node-version }}"
+          mkdir -p "$PROJECT_DIR"
+
+          npx --yes --package "./${{ steps.pack.outputs.tarball }}" agent-skills-installer install all --scope project --cwd "$PROJECT_DIR"
+
+          test -f "$PROJECT_DIR/.codex/skills/playwright/agents/openai.yaml"
+          test -f "$PROJECT_DIR/.claude/skills/playwright/scripts/playwright_cli.sh"
+          test -f "$PROJECT_DIR/.gemini/skills/playwright/references/cli.md"
+          test ! -e "$PROJECT_DIR/.gemini/skills/playwright/agents/openai.yaml"
