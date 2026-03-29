@@ -1,0 +1,12 @@
+{
+  "name": "vercel",
+  "version": "0.21.0",
+  "description": "Vercel ecosystem guidance and MCP integration for Gemini CLI.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    }
+  }
+}
