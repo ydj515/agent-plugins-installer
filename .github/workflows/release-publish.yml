@@ -80,10 +80,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org
 
-      - name: Publish to npm
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Show Node and npm versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Publish to npm with trusted publishing
+        run: npm publish --access public
