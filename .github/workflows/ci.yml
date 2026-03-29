@@ -48,12 +48,11 @@ jobs:
 
       - name: Verify packed tarball with npx smoke test
         run: |
-          PROJECT_DIR="${RUNNER_TEMP}/agent-skills-installer-smoke-${{ matrix.node-version }}"
-          mkdir -p "$PROJECT_DIR"
+          PROJECT_DIR="${RUNNER_TEMP}/agent-plugins-installer-smoke-${{ matrix.node-version }}"
+          CACHE_DIR="${RUNNER_TEMP}/agent-plugins-installer-npm-cache-${{ matrix.node-version }}"
+          mkdir -p "$PROJECT_DIR" "$CACHE_DIR"
 
-          npx --yes --package "./${{ steps.pack.outputs.tarball }}" agent-skills-installer install all --scope project --cwd "$PROJECT_DIR"
+          NPM_CONFIG_CACHE="$CACHE_DIR" npx --yes --package "./${{ steps.pack.outputs.tarball }}" agent-plugins-installer install codex --scope project --cwd "$PROJECT_DIR" --plugins github
 
-          test -f "$PROJECT_DIR/.codex/skills/playwright/agents/openai.yaml"
-          test -f "$PROJECT_DIR/.claude/skills/playwright/scripts/playwright_cli.sh"
-          test -f "$PROJECT_DIR/.gemini/skills/playwright/references/cli.md"
-          test ! -e "$PROJECT_DIR/.gemini/skills/playwright/agents/openai.yaml"
+          test -f "$PROJECT_DIR/.codex/plugins/github/.codex-plugin/plugin.json"
+          test -f "$PROJECT_DIR/.agents/plugins/marketplace.json"
