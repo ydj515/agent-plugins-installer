@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.4]
+
+### Highlights
+
+- added the bundled `superpowers` integration for Codex, Claude Code, and Gemini CLI
+- aligned `superpowers` with the shared integration-bundle layout used by the installer
+- extended install regression coverage to verify multi-target installation of `superpowers`
+
+### Added
+
+- `superpowers` catalog entry with shared metadata, tags, and workflow-oriented grouping
+- target-specific `superpowers` manifests for Codex, Claude Code, and Gemini CLI
+- Gemini extension context file for the bundled `superpowers` workflow guidance
+- install regression test that verifies `superpowers` is installed across Codex, Claude Code, and Gemini CLI in project scope
+
+### Changed
+
+- moved the `superpowers` Codex plugin manifest into the standard `targets/codex` overlay structure used by packaged integrations
+- updated the README bundled integration list to include `superpowers`
+
 ## [0.1.3]
 
 ### Highlights
