@@ -22,6 +22,17 @@
       "enabledByDefault": true,
       "tags": ["vercel", "deployment"],
       "groups": ["cloud", "deployment"]
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "description": "Agent workflow bundle for planning, TDD, debugging, and collaboration across Codex, Claude Code, and Gemini CLI.",
+      "version": "5.1.0",
+      "sourceDir": "plugins/superpowers",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["workflow", "planning", "testing", "debugging"],
+      "groups": ["coding", "workflow"]
     }
   ]
 }

@@ -102,6 +102,57 @@ test("install all --scope project 는 codex, claude, gemini를 함께 설치한�
   assert.match(geminiLog, /extensions enable github --scope workspace/);
 });
 
+test("install all --scope project 는 superpowers 를 모든 타깃에 설치한다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
+
+  const result = runCli(
+    [
+      "install",
+      "all",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "superpowers"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.equal(
+    await pathExists(
+      path.join(projectDir, ".codex", "plugins", "superpowers", ".codex-plugin", "plugin.json")
+    ),
+    true
+  );
+  assert.equal(
+    await pathExists(
+      path.join(projectDir, ".claude", "plugins", "superpowers", ".claude-plugin", "plugin.json")
+    ),
+    true
+  );
+  assert.equal(
+    await pathExists(
+      path.join(homeDir, ".gemini", "extensions", "superpowers", "gemini-extension.json")
+    ),
+    true
+  );
+
+  const claudeState = await readJsonFile(path.join(projectDir, ".claude", STATE_FILE));
+  assert.equal(Object.hasOwn(claudeState.integrations, "superpowers"), true);
+
+  const geminiState = await readJsonFile(path.join(projectDir, ".gemini", STATE_FILE));
+  assert.equal(Object.hasOwn(geminiState.integrations, "superpowers"), true);
+
+  const geminiLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.match(geminiLog, /extensions enable superpowers --scope workspace/);
+});
+
 test("claude user 설치는 공식 plugin install 명령을 호출하고 state를 기록한다", async (t) => {
   const homeDir = await createTempDir(t, "agent-plugins-home-");
   const fake = await createFakeCommands(t);

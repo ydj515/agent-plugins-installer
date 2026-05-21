@@ -12,6 +12,7 @@ The bundled catalog currently includes these integrations:
 
 - `github`
 - `vercel`
+- `superpowers`
 
 Supported targets:
 

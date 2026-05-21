@@ -1,0 +1,6 @@
+{
+  "name": "superpowers",
+  "version": "5.1.0",
+  "description": "Superpowers workflow skills for Gemini CLI.",
+  "contextFileName": "GEMINI.md"
+}

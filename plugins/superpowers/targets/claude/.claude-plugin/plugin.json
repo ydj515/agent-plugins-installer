@@ -1,0 +1,11 @@
+{
+  "name": "superpowers",
+  "description": "Shared Superpowers workflow plugin for Claude Code.",
+  "version": "5.1.0",
+  "author": {
+    "name": "Jesse Vincent"
+  },
+  "homepage": "https://github.com/obra/superpowers",
+  "repository": "https://github.com/obra/superpowers",
+  "license": "MIT"
+}
