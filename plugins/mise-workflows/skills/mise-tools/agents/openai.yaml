@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Tools"
+  short_description: "Author and review mise tool declarations."
+  default_prompt: "Use $mise-tools to design or review a project's [tools] section."

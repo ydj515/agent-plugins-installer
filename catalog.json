@@ -33,6 +33,17 @@
       "enabledByDefault": true,
       "tags": ["workflow", "planning", "testing", "debugging"],
       "groups": ["coding", "workflow"]
+    },
+    {
+      "id": "mise-workflows",
+      "title": "Mise Workflows",
+      "description": "Shared mise workflow bundle for authoring, reviewing, and standardizing mise.toml-based project setup across Codex, Claude Code, and Gemini CLI.",
+      "version": "0.1.0",
+      "sourceDir": "plugins/mise-workflows",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["mise", "workflow", "tooling", "review"],
+      "groups": ["coding", "workflow"]
     }
   ]
 }

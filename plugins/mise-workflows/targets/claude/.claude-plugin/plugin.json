@@ -1,0 +1,27 @@
+{
+  "name": "mise-workflows",
+  "owner": {
+    "name": "ydj515",
+    "email": "ydj515@gmail.com"
+  },
+  "metadata": {
+    "description": "Mise Workflows core skills for authoring and reviewing mise configuration workflows in Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "mise-workflows-core",
+      "description": "Core workflow skills for tools, env, tasks, policy, profiles, and review, backed by root ecosystem references and starter profile examples.",
+      "source": "../../",
+      "strict": false,
+      "skills": [
+        "../../skills/mise-env",
+        "../../skills/mise-policy",
+        "../../skills/mise-profiles",
+        "../../skills/mise-review",
+        "../../skills/mise-tasks",
+        "../../skills/mise-tools"
+      ]
+    }
+  ]
+}

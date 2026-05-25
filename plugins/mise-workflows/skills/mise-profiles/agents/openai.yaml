@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Profiles"
+  short_description: "Choose and review mise project profiles."
+  default_prompt: "Use $mise-profiles to choose or review a mise project profile."

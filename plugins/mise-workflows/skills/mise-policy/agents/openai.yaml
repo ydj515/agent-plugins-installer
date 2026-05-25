@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Policy"
+  short_description: "Apply shared mise version and policy rules."
+  default_prompt: "Use $mise-policy to apply shared version and policy guardrails for mise."

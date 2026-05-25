@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Env"
+  short_description: "Author and review mise environment config."
+  default_prompt: "Use $mise-env to design or review a project's [env] configuration."

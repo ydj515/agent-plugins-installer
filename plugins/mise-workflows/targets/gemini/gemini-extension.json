@@ -1,0 +1,6 @@
+{
+  "name": "mise-workflows",
+  "version": "0.1.0",
+  "description": "Gemini CLI context for core mise workflow skills, ecosystem references, and starter profile guidance.",
+  "contextFileName": "GEMINI.md"
+}

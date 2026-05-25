@@ -13,6 +13,7 @@ The bundled catalog currently includes these integrations:
 - `github`
 - `vercel`
 - `superpowers`
+- `mise-workflows`
 
 Supported targets:
 
@@ -35,6 +36,7 @@ Direct install
 npx agent-plugins-installer install codex --scope project --plugins github
 npx agent-plugins-installer install claude --scope user --plugins github,vercel
 npx agent-plugins-installer install gemini --scope user --plugins vercel
+npx agent-plugins-installer install codex --scope project --plugins mise-workflows
 ```
 
 List installed and available integrations:

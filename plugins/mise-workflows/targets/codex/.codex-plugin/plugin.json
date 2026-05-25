@@ -1,0 +1,36 @@
+{
+  "name": "mise-workflows",
+  "version": "0.1.0",
+  "description": "Author, review, and standardize mise configuration workflows.",
+  "author": {
+    "name": "ydj515",
+    "email": "ydj515@gmail.com"
+  },
+  "keywords": [
+    "mise",
+    "workflow",
+    "mise.toml",
+    "profiles",
+    "tooling",
+    "review",
+    "developer-workflow"
+  ],
+  "skills": "../../../skills/",
+  "interface": {
+    "displayName": "Mise Workflows",
+    "shortDescription": "Core skills, ecosystem references, and starter profiles for mise projects",
+    "longDescription": "Use Mise Workflows to author, review, and standardize mise-based project setup through six core skills, ecosystem-specific reference guides, validator-backed review, and starter profile examples for Python and Java workflows.",
+    "developerName": "ydj515",
+    "category": "Coding",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "defaultPrompt": [
+      "Review this repository's mise.toml setup.",
+      "Set up a starter mise profile for this project.",
+      "Audit our tools, env, and tasks workflow in mise."
+    ],
+    "brandColor": "#2563EB",
+    "composerIcon": "../../../assets/app-icon.svg",
+    "logo": "../../../assets/app-icon.png",
+    "screenshots": []
+  }
+}

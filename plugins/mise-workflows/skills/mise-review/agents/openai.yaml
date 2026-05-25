@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Review"
+  short_description: "Lint and review mise configurations."
+  default_prompt: "Use $mise-review to review a mise configuration and report rule violations."

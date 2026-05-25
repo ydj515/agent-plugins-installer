@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Tasks"
+  short_description: "Author and review mise task definitions."
+  default_prompt: "Use $mise-tasks to design or review a project's mise tasks."
