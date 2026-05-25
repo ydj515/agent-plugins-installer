@@ -26,7 +26,8 @@ Do not use this skill for tool selector policy or language runtime rules.
 2. Read `../../references/task-arguments.md` and `../../references/task-patterns.md`.
 3. Read `references/tasks-core.md` for the execution checklist.
 4. Read `references/anti-patterns.md` before changing legacy task argument flows.
-5. If the repository is a monorepo or has release automation, read the advanced/release references.
+5. If the repository is a monorepo, read `../../references/monorepo-workspace.md` and `../../references/task-advanced.md`.
+6. If the repository has release automation, read `../../references/release-workflow-patterns.md`.
 
 ## Workflow
 

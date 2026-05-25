@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.6]
+
+### Highlights
+
+- clarified `mise-workflows` skill guidance by replacing ambiguous reference instructions with explicit document paths
+- fixed the Codex `mise-workflows` manifest so packaged skill and asset paths resolve from the installed plugin archive
+
+### Changed
+
+- updated `mise-env`, `mise-tasks`, and `mise-review` to point directly to the relevant root references for monorepo, GitHub auth, env, task, and release guidance
+- corrected `plugins/mise-workflows/targets/codex/.codex-plugin/plugin.json` to use archive-local `./skills/` and `./assets/...` paths
+
 ## [0.1.5]
 
 ### Highlights

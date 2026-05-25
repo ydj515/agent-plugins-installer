@@ -24,8 +24,9 @@ Do not use this skill as the primary place to restate every runtime or framework
 1. Read `../../references/rules.md`.
 2. Read `../../references/profile-catalog.md`.
 3. Read `references/rules.md` for the report contract.
-4. Read root references for env/task topics if the review touches those areas.
-5. Run `scripts/validate_mise_toml.py` rather than inventing ad-hoc output.
+4. If the review touches env topics, read `../../references/env-core.md` and `../../references/env-patterns.md`.
+5. If the review touches task topics, read `../../references/tasks-core.md`, `../../references/task-arguments.md`, and `../../references/task-patterns.md`.
+6. Run `scripts/validate_mise_toml.py` rather than inventing ad-hoc output.
 
 ## Review Flow
 

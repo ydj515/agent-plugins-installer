@@ -27,7 +27,8 @@ Do not use this skill for tool selection, task composition, or runtime-specific 
 3. Read `../../references/env-patterns.md` for directive, template, and venv patterns.
 4. Read `references/env-core.md` for the local execution checklist.
 5. Read `references/anti-patterns.md` before editing tracked local config behavior.
-6. If monorepo or multi-account GitHub auth is involved, read the related root references.
+6. If the repository is a monorepo, read `../../references/hub-spoke-architecture.md`.
+7. If multi-account GitHub auth is involved, read `../../references/github-tokens.md`.
 
 ## Workflow
 
