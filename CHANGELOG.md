@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.5]
+
+### Highlights
+
+- added the bundled `mise-workflows` integration for Codex, Claude Code, and Gemini CLI
+- updated release metadata and documentation for the new `mise-workflows` catalog entry
+
+### Added
+
+- `mise-workflows` catalog entry with shared metadata, tags, and workflow-oriented grouping
+
+### Changed
+
+- updated the README bundled integration list and direct install examples to include `mise-workflows`
+- bumped the package version metadata to `0.1.5`
+
 ## [0.1.4]
 
 ### Highlights
