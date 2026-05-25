@@ -22,6 +22,33 @@ Supported targets:
 - Gemini CLI: local extension bundle copy plus `gemini extensions install/enable`
   Note: Gemini uses extensions, not plugins.
 
+## Repo Marketplace Manifests
+
+This repository now includes repo marketplace manifests for direct discovery:
+
+- Codex: `.agents/plugins/marketplace.json`
+- Claude Code: `.claude-plugin/marketplace.json`
+
+The plugin roots under `plugins/<plugin-id>/` remain the shared source bundle. The target manifests under `plugins/<plugin-id>/targets/<agent>/` are the source of truth for agent-specific entrypoints.
+
+Direct marketplace and extension installs use generated self-contained bundles under `.generated/direct/<agent>/<plugin-id>`, built by merging:
+
+- shared source: `plugins/<plugin-id>/`
+- target overlay: `plugins/<plugin-id>/targets/<agent>/`
+
+Generate or refresh those bundles with:
+
+```bash
+npm run sync:direct-bundles
+```
+
+`npm test` and `npm run test:real-cli` run this sync step automatically before verification.
+
+This is separate from the installer's generated local manifests:
+
+- Codex project or user installs still generate `.agents/plugins/marketplace.json` in the target workspace or home directory, and those generated entries point at `.codex/plugins/<plugin-id>`.
+- Claude installs still generate `.claude/.claude-plugin/marketplace.json` in the target workspace or home directory, and those generated entries point at `.claude/plugins/<plugin-id>`.
+
 ## Quick Start
 
 Interactive install:
@@ -76,6 +103,7 @@ npx agent-plugins-installer update codex --scope project --plugins github
 ### Gemini CLI
 
 - Gemini uses extensions, not plugins.
+- For direct repo-based extension validation, use the generated bundles under `.generated/direct/gemini/<plugin-id>`.
 - In `user` scope, copies the shared integration source into `~/.gemini/extensions/<extension-id>` and runs `gemini extensions install <local-extension-path> --consent`.
 - In `project` scope, also copies the shared integration source into `~/.gemini/extensions/<extension-id>`, then runs `gemini extensions enable <name> --scope workspace` for the current workspace.
 - In `project` scope, the installed extension bundle is still visible under `~/.gemini/extensions/<extension-id>`, not under `<cwd>/.gemini`.

@@ -5,7 +5,7 @@ node_modules/
 .codex/
 .claude/
 .gemini/
-.agents/
+.generated/
 
 # Packaged tarballs
 *.tgz

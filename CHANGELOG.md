@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.7]
+
+### Highlights
+
+- removed duplicated root agent manifests from plugin source directories
+- made `targets/<agent>` overlays the source of truth for direct bundle generation
+- added generated direct-bundle syncing for repo marketplace and real CLI verification
+
+### Added
+
+- `scripts/sync-direct-bundles.mjs` to build self-contained direct-install bundles under `.generated/direct`
+- `test/real-cli-e2e.test.js` for real Codex, Claude, and Gemini install verification
+- `sync:direct-bundles` npm script for refreshing generated direct bundles
+- `test:real-cli` npm script for running only the real CLI integration test suite
+
+### Changed
+
+- updated repo-level Codex and Claude marketplace manifests to point at generated bundles under `.generated/direct`
+- updated README documentation to distinguish shared source bundles, target overlays, generated direct bundles, and installer-generated local outputs
+
 ## [0.1.6]
 
 ### Highlights

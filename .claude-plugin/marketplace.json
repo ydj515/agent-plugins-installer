@@ -1,0 +1,28 @@
+{
+  "name": "agent-plugins-installer",
+  "owner": {
+    "name": "Agent Plugins Installer"
+  },
+  "plugins": [
+    {
+      "name": "github",
+      "source": "./.generated/direct/claude/github",
+      "description": "Shared GitHub workflow plugin for Claude Code."
+    },
+    {
+      "name": "vercel",
+      "source": "./.generated/direct/claude/vercel",
+      "description": "Shared Vercel workflow plugin for Claude Code."
+    },
+    {
+      "name": "superpowers",
+      "source": "./.generated/direct/claude/superpowers",
+      "description": "Shared Superpowers workflow plugin for Claude Code."
+    },
+    {
+      "name": "mise-workflows",
+      "source": "./.generated/direct/claude/mise-workflows",
+      "description": "Core workflow skills for authoring and reviewing mise configuration workflows in Claude Code."
+    }
+  ]
+}

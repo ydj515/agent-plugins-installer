@@ -1,6 +1,6 @@
 {
   "name": "agent-plugins-installer",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Install bundled plugins and extensions for Codex, Claude Code, and Gemini CLI.",
   "type": "module",
   "bin": {
@@ -19,7 +19,9 @@
   },
   "scripts": {
     "start": "node ./src/cli.js",
-    "test": "node --test",
+    "sync:direct-bundles": "node ./scripts/sync-direct-bundles.mjs",
+    "test": "npm run sync:direct-bundles && node --test",
+    "test:real-cli": "npm run sync:direct-bundles && node --test test/real-cli-e2e.test.js",
     "test:node20": "mise run test-node20",
     "test:node22": "mise run test-node22",
     "test:node24": "mise run test-node24",
