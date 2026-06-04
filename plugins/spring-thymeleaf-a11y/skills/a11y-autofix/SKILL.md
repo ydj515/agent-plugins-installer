@@ -7,38 +7,23 @@ description: Use when a Spring Boot or Thymeleaf project already has an accessib
 
 ## Overview
 
-Read an existing accessibility report, derive only safe Thymeleaf-oriented fix candidates, and prepare the next rerun step. Prefer this skill when the user wants automation after the audit report already exists.
+Read an existing accessibility report, derive safe Thymeleaf fix candidates, and prepare the rerun step. Use only after `$a11y-audit-guide`.
 
 ## Workflow
 
 1. Confirm the report path and project root before changing files.
-2. Read `../../references/axe-result-policy.md` and `../../references/thymeleaf-fix-patterns.md`.
-3. Generate a dry-run plan first.
-4. Apply only low-risk fixes with unambiguous intent.
-5. Re-run the audit loop after changes.
-6. Leave unresolved or context-heavy findings for manual review.
-
-## Safe Changes Only
-
-- Missing `alt` on decorative or descriptive images when the intended meaning is clear
-- Missing `label` and `for` linkage when a unique form field pairing is obvious
-- Missing `aria-describedby` when an existing help text element is already present
-- Missing accessible names on buttons when the visible text is already present in the template
-
-## Avoid These Changes
-
-- Landmark restructuring
-- Heading hierarchy rewrites
-- Link text rewrites that require content judgment
-- Widget ARIA changes for custom JavaScript components
-- Cross-template fragment edits without verifying downstream impact
+2. Read `../../references/axe-result-policy.md`, `../../references/thymeleaf-fix-patterns.md`, and `../../references/autofix-boundaries.md`.
+3. If runtime readiness is unclear, read `../../references/runtime-strategy.md`; do not install by default.
+4. Generate a dry-run plan first; use manual report analysis if setup is blocked.
+5. Apply only low-risk fixes with unambiguous intent.
+6. Re-run the audit loop after changes, using the audit fallback only when the scripted runner cannot run.
+7. Leave unresolved or context-heavy findings for manual review.
 
 ## Commands
 
 From the plugin `scripts/` directory:
 
 ```bash
-npm install --ignore-scripts
 npm run autofix -- --report <path-to-report.json> --dry-run
 npm run rerun -- --config <path-to-audit-config.json> --report <path-to-report.json>
 ```
@@ -48,6 +33,7 @@ npm run rerun -- --config <path-to-audit-config.json> --report <path-to-report.j
 - Emit a plan file even when no file edits are applied.
 - Record why a rule was skipped instead of silently ignoring it.
 - Keep `incomplete` items open unless the user provides a manual resolution.
+- State whether the plan or rerun used the scripted runner, a fresh setup, or a fallback.
 
 ## Handoff
 

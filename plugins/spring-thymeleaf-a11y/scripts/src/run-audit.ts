@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import { basename, dirname, extname, resolve } from "node:path";
 import {
   AuditConfig,
   AuditReport,
@@ -11,7 +11,8 @@ import {
   resolveFrom,
   toAbsoluteUrl,
   truncate,
-  writeJsonFile
+  writeJsonFile,
+  writeTextFile
 } from "./common.js";
 
 interface AxeNodeLike {
@@ -151,11 +152,80 @@ async function auditPage(browser: BrowserLike, config: AuditConfig, targetIndex:
   };
 }
 
-function buildOutputPath(configPath: string, config: AuditConfig): string {
+function withExtension(path: string, extension: string): string {
+  return `${dirname(path)}/${basename(path, extname(path))}${extension}`;
+}
+
+function buildOutputPaths(configPath: string, config: AuditConfig): { jsonPath: string; mdPath: string } {
   const outputDir = config.outputDir ?? "./reports/a11y";
   const resolvedDir = resolveFrom(configPath, outputDir);
   const reportName = config.reportName ?? `axe-report-${new Date().toISOString().replaceAll(":", "-")}.json`;
-  return `${resolvedDir}/${reportName}`;
+  const jsonPath = `${resolvedDir}/${reportName}`;
+  return {
+    jsonPath,
+    mdPath:
+      typeof config.markdownReportName === "string" && config.markdownReportName.trim() !== ""
+        ? `${resolvedDir}/${config.markdownReportName}`
+        : withExtension(jsonPath, ".md")
+  };
+}
+
+function formatRuleSummary(rule: RuleResult): string[] {
+  const lines: string[] = [];
+  lines.push(`- ${rule.id} (${rule.impact ?? "unknown"})`);
+  if (rule.help) {
+    lines.push(`  - Help: ${rule.help}`);
+  }
+  if (rule.nodes.length > 0) {
+    lines.push(`  - Selectors: ${rule.nodes.flatMap((node) => node.target).join(", ") || "none captured"}`);
+  }
+  return lines;
+}
+
+function buildMarkdownReport(report: AuditReport): string {
+  const lines: string[] = [];
+  lines.push("# Accessibility Audit Report");
+  lines.push("");
+  lines.push(`- Generated at: ${report.generatedAt}`);
+  lines.push(`- Config: ${report.configPath}`);
+  lines.push(`- Overall status: ${report.overallStatus}`);
+  lines.push(`- Pages: ${report.totals.pages}`);
+  lines.push(`- Violations: ${report.totals.violations}`);
+  lines.push(`- Incomplete: ${report.totals.incomplete}`);
+  lines.push(`- Passes: ${report.totals.passes}`);
+  lines.push(`- Inapplicable: ${report.totals.inapplicable}`);
+  lines.push("");
+
+  for (const page of report.pages) {
+    lines.push(`## ${page.name}`);
+    lines.push("");
+    lines.push(`- URL: ${page.url}`);
+    lines.push(`- Title: ${page.title || "untitled"}`);
+    lines.push(`- Status: ${page.status}`);
+    lines.push(`- Violations: ${page.summary.violations}`);
+    lines.push(`- Incomplete: ${page.summary.incomplete}`);
+    lines.push("");
+
+    if (page.violations.length > 0) {
+      lines.push("### Violations");
+      lines.push("");
+      for (const rule of page.violations) {
+        lines.push(...formatRuleSummary(rule));
+      }
+      lines.push("");
+    }
+
+    if (page.incomplete.length > 0) {
+      lines.push("### Incomplete");
+      lines.push("");
+      for (const rule of page.incomplete) {
+        lines.push(...formatRuleSummary(rule));
+      }
+      lines.push("");
+    }
+  }
+
+  return `${lines.join("\n")}\n`;
 }
 
 async function main(): Promise<void> {
@@ -199,9 +269,11 @@ async function main(): Promise<void> {
       pages: pageResults
     };
 
-    const outputPath = buildOutputPath(configPath, config);
-    await writeJsonFile(outputPath, report);
-    console.log(`Audit report written to ${outputPath}`);
+    const outputPaths = buildOutputPaths(configPath, config);
+    await writeJsonFile(outputPaths.jsonPath, report);
+    await writeTextFile(outputPaths.mdPath, buildMarkdownReport(report));
+    console.log(`Audit JSON report written to ${outputPaths.jsonPath}`);
+    console.log(`Audit Markdown report written to ${outputPaths.mdPath}`);
     console.log(`Overall status: ${report.overallStatus}`);
   } finally {
     await browser.close();

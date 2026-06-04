@@ -16,6 +16,7 @@ export interface AuditConfig {
   baseUrl?: string;
   outputDir?: string;
   reportName?: string;
+  markdownReportName?: string;
   tags?: string[];
   browser?: {
     headless?: boolean;
@@ -108,7 +109,7 @@ export interface AutofixPlan {
 export function parseArgs(argv: string[]): minimist.ParsedArgs {
   return minimist(argv, {
     boolean: ["dry-run", "write"],
-    string: ["config", "report", "output"],
+    string: ["config", "report", "output", "md-output", "json-output"],
     alias: {
       c: "config",
       r: "report",

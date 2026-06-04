@@ -8,6 +8,7 @@ import {
   parseArgs,
   readJsonFile,
   requireStringArg,
+  writeJsonFile,
   writeTextFile
 } from "./common.js";
 
@@ -116,20 +117,36 @@ function buildMarkdown(guide: FixGuide, report: AuditReport): string {
   return `${lines.join("\n")}\n`;
 }
 
+function optionalStringArg(args: Record<string, unknown>, name: "output" | "md-output" | "json-output"): string | undefined {
+  const value = args[name];
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
+function withExtension(path: string, extension: string): string {
+  return `${dirname(path)}/${basename(path, extname(path))}${extension}`;
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const reportPath = resolve(process.cwd(), requireStringArg(args, "report"));
   const report = await readJsonFile<AuditReport>(reportPath);
   const guide = toGuide(reportPath, report);
 
-  const requestedOutput = typeof args.output === "string" && args.output.trim() !== "" ? args.output : undefined;
-  const outputPath =
-    requestedOutput !== undefined
-      ? resolve(process.cwd(), requestedOutput)
+  const requestedMarkdownOutput = optionalStringArg(args, "md-output") ?? optionalStringArg(args, "output");
+  const markdownOutputPath =
+    requestedMarkdownOutput !== undefined
+      ? resolve(process.cwd(), requestedMarkdownOutput)
       : resolve(dirname(reportPath), `${basename(reportPath, extname(reportPath))}-fix-guide.md`);
+  const requestedJsonOutput = optionalStringArg(args, "json-output");
+  const jsonOutputPath =
+    requestedJsonOutput !== undefined
+      ? resolve(process.cwd(), requestedJsonOutput)
+      : withExtension(markdownOutputPath, ".json");
 
-  await writeTextFile(outputPath, buildMarkdown(guide, report));
-  console.log(`Fix guide written to ${outputPath}`);
+  await writeTextFile(markdownOutputPath, buildMarkdown(guide, report));
+  await writeJsonFile(jsonOutputPath, guide);
+  console.log(`Fix guide Markdown written to ${markdownOutputPath}`);
+  console.log(`Fix guide JSON written to ${jsonOutputPath}`);
   console.log(`Action items: ${guide.itemCount}`);
 }
 

@@ -8,7 +8,7 @@
       "name": "github",
       "source": {
         "source": "local",
-        "path": "./.generated/direct/codex/github"
+        "path": "./.codex/plugins/github"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -20,7 +20,7 @@
       "name": "vercel",
       "source": {
         "source": "local",
-        "path": "./.generated/direct/codex/vercel"
+        "path": "./.codex/plugins/vercel"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -32,7 +32,7 @@
       "name": "superpowers",
       "source": {
         "source": "local",
-        "path": "./.generated/direct/codex/superpowers"
+        "path": "./.codex/plugins/superpowers"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -44,7 +44,7 @@
       "name": "mise-workflows",
       "source": {
         "source": "local",
-        "path": "./.generated/direct/codex/mise-workflows"
+        "path": "./.codex/plugins/mise-workflows"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -56,7 +56,7 @@
       "name": "spring-thymeleaf-a11y",
       "source": {
         "source": "local",
-        "path": "./.generated/direct/codex/spring-thymeleaf-a11y"
+        "path": "./.codex/plugins/spring-thymeleaf-a11y"
       },
       "policy": {
         "installation": "AVAILABLE",

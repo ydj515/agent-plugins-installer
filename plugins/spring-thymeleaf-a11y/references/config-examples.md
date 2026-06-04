@@ -7,6 +7,7 @@
   "baseUrl": "http://localhost:8080",
   "outputDir": "./reports/a11y",
   "reportName": "local-dev-audit.json",
+  "markdownReportName": "local-dev-audit.md",
   "tags": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
   "browser": {
     "headless": true
@@ -36,11 +37,16 @@
 
 ```bash
 cd plugins/spring-thymeleaf-a11y/scripts
-npm install --ignore-scripts
 npm run audit -- --config ../../examples/local-a11y-config.json
 npm run fix-guide -- --report ../../examples/reports/a11y/local-dev-audit.json
 npm run autofix -- --report ../../examples/reports/a11y/local-dev-audit.json --dry-run
 ```
+
+The audit command writes both `local-dev-audit.json` and `local-dev-audit.md`. The fix-guide
+command writes both `local-dev-audit-fix-guide.md` and `local-dev-audit-fix-guide.json`.
+
+If `node_modules/` is missing, read `runtime-strategy.md` before installing dependencies. Prefer
+`npm ci --ignore-scripts --prefer-offline --no-audit --no-fund` over `npm install`.
 
 ## 경로 원칙
 

@@ -2,6 +2,7 @@
   "baseUrl": "http://localhost:8080",
   "outputDir": "./reports/a11y",
   "reportName": "local-dev-audit.json",
+  "markdownReportName": "local-dev-audit.md",
   "tags": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
   "browser": {
     "headless": true
