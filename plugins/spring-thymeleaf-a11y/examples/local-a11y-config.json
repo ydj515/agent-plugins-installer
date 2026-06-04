@@ -1,0 +1,21 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "outputDir": "./reports/a11y",
+  "reportName": "local-dev-audit.json",
+  "tags": ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
+  "browser": {
+    "headless": true
+  },
+  "pages": [
+    {
+      "name": "home",
+      "url": "/",
+      "waitForNetworkIdle": true
+    },
+    {
+      "name": "login",
+      "url": "/login",
+      "waitForSelector": "form"
+    }
+  ]
+}

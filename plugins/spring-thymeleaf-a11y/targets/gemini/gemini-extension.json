@@ -1,0 +1,6 @@
+{
+  "name": "spring-thymeleaf-a11y",
+  "version": "0.1.0",
+  "description": "Accessibility audit and safe-fix workflow skills for Spring Boot and Thymeleaf applications.",
+  "contextFileName": "GEMINI.md"
+}

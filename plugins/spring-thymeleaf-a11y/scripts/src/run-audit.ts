@@ -1,0 +1,215 @@
+import { resolve } from "node:path";
+import {
+  AuditConfig,
+  AuditReport,
+  PageAuditResult,
+  RuleResult,
+  buildStatus,
+  parseArgs,
+  readJsonFile,
+  requireStringArg,
+  resolveFrom,
+  toAbsoluteUrl,
+  truncate,
+  writeJsonFile
+} from "./common.js";
+
+interface AxeNodeLike {
+  target?: unknown;
+  html?: unknown;
+  failureSummary?: unknown;
+}
+
+interface AxeRuleLike {
+  id?: unknown;
+  impact?: unknown;
+  description?: unknown;
+  help?: unknown;
+  helpUrl?: unknown;
+  tags?: unknown;
+  nodes?: unknown;
+}
+
+interface AxeResultsLike {
+  violations?: unknown;
+  incomplete?: unknown;
+  passes?: unknown;
+  inapplicable?: unknown;
+}
+
+type PageLike = {
+  goto: (url: string, options?: { waitUntil?: "domcontentloaded" | "load" | "networkidle" }) => Promise<unknown>;
+  waitForSelector: (selector: string) => Promise<unknown>;
+  waitForTimeout: (timeoutMs: number) => Promise<unknown>;
+  waitForLoadState: (state: "networkidle") => Promise<unknown>;
+  title: () => Promise<string>;
+};
+
+type BrowserLike = {
+  newPage: () => Promise<PageLike>;
+  close: () => Promise<void>;
+};
+
+function normalizeRule(rule: AxeRuleLike): RuleResult {
+  const nodes = Array.isArray(rule.nodes) ? rule.nodes : [];
+  return {
+    id: typeof rule.id === "string" ? rule.id : "unknown-rule",
+    impact: typeof rule.impact === "string" ? rule.impact : null,
+    description: typeof rule.description === "string" ? rule.description : "",
+    help: typeof rule.help === "string" ? rule.help : "",
+    helpUrl: typeof rule.helpUrl === "string" ? rule.helpUrl : "",
+    tags: Array.isArray(rule.tags) ? rule.tags.filter((value): value is string => typeof value === "string") : [],
+    nodes: nodes.map((node) => {
+      const typedNode = node as AxeNodeLike;
+      return {
+        target: Array.isArray(typedNode.target)
+          ? typedNode.target.filter((value): value is string => typeof value === "string")
+          : [],
+        html: typeof typedNode.html === "string" ? truncate(typedNode.html) : "",
+        failureSummary:
+          typeof typedNode.failureSummary === "string" ? truncate(typedNode.failureSummary, 400) : null
+      };
+    })
+  };
+}
+
+function normalizeRules(rawRules: unknown): RuleResult[] {
+  if (!Array.isArray(rawRules)) {
+    return [];
+  }
+  return rawRules.map((rule) => normalizeRule(rule as AxeRuleLike));
+}
+
+async function waitForTargetPage(page: PageLike, config: AuditConfig, targetIndex: number): Promise<void> {
+  const target = config.pages[targetIndex];
+  if (target.waitForSelector) {
+    await page.waitForSelector(target.waitForSelector);
+  }
+  if (target.waitForTimeoutMs) {
+    await page.waitForTimeout(target.waitForTimeoutMs);
+  }
+  if (target.waitForNetworkIdle) {
+    await page.waitForLoadState("networkidle");
+  }
+}
+
+async function createBrowser(headless: boolean): Promise<BrowserLike> {
+  const playwright = (await import("playwright")) as {
+    chromium: {
+      launch: (options: { headless: boolean }) => Promise<BrowserLike>;
+    };
+  };
+  return playwright.chromium.launch({ headless });
+}
+
+async function runAxe(page: PageLike, tags: string[]): Promise<AxeResultsLike> {
+  const axeModule = await import("@axe-core/playwright");
+  const builderValue =
+    (axeModule as { AxeBuilder?: unknown }).AxeBuilder ??
+    (axeModule as { default?: { AxeBuilder?: unknown } }).default?.AxeBuilder;
+
+  if (typeof builderValue !== "function") {
+    throw new Error("Unable to load AxeBuilder from @axe-core/playwright.");
+  }
+
+  const Builder = builderValue as new (options: { page: PageLike }) => {
+    withTags: (tagNames: string[]) => unknown;
+    analyze: () => Promise<AxeResultsLike>;
+  };
+  const builder = new Builder({ page });
+  const configuredBuilder =
+    tags.length > 0 && "withTags" in builder ? (builder.withTags(tags) as { analyze: () => Promise<AxeResultsLike> }) : builder;
+
+  return configuredBuilder.analyze();
+}
+
+async function auditPage(browser: BrowserLike, config: AuditConfig, targetIndex: number): Promise<PageAuditResult> {
+  const target = config.pages[targetIndex];
+  const page = await browser.newPage();
+  const targetUrl = toAbsoluteUrl(config.baseUrl, target.url);
+  await page.goto(targetUrl, { waitUntil: "domcontentloaded" });
+  await waitForTargetPage(page, config, targetIndex);
+  const title = await page.title();
+  const rawResults = await runAxe(page, config.tags ?? []);
+  const violations = normalizeRules((rawResults as AxeResultsLike).violations);
+  const incomplete = normalizeRules((rawResults as AxeResultsLike).incomplete);
+  const passes = normalizeRules((rawResults as AxeResultsLike).passes);
+  const inapplicable = normalizeRules((rawResults as AxeResultsLike).inapplicable);
+  return {
+    name: target.name,
+    url: targetUrl,
+    title,
+    status: buildStatus(violations.length, incomplete.length),
+    summary: {
+      violations: violations.length,
+      incomplete: incomplete.length,
+      passes: passes.length,
+      inapplicable: inapplicable.length
+    },
+    violations,
+    incomplete
+  };
+}
+
+function buildOutputPath(configPath: string, config: AuditConfig): string {
+  const outputDir = config.outputDir ?? "./reports/a11y";
+  const resolvedDir = resolveFrom(configPath, outputDir);
+  const reportName = config.reportName ?? `axe-report-${new Date().toISOString().replaceAll(":", "-")}.json`;
+  return `${resolvedDir}/${reportName}`;
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+  const configPath = resolve(process.cwd(), requireStringArg(args, "config"));
+  const config = await readJsonFile<AuditConfig>(configPath);
+
+  if (!Array.isArray(config.pages) || config.pages.length === 0) {
+    throw new Error("The audit config must define at least one page in 'pages'.");
+  }
+
+  const browser = await createBrowser(config.browser?.headless ?? true);
+  try {
+    const pageResults: PageAuditResult[] = [];
+    for (let index = 0; index < config.pages.length; index += 1) {
+      pageResults.push(await auditPage(browser, config, index));
+    }
+
+    const totals = pageResults.reduce(
+      (accumulator, pageResult) => {
+        accumulator.violations += pageResult.summary.violations;
+        accumulator.incomplete += pageResult.summary.incomplete;
+        accumulator.passes += pageResult.summary.passes;
+        accumulator.inapplicable += pageResult.summary.inapplicable;
+        return accumulator;
+      },
+      {
+        pages: pageResults.length,
+        violations: 0,
+        incomplete: 0,
+        passes: 0,
+        inapplicable: 0
+      }
+    );
+
+    const report: AuditReport = {
+      generatedAt: new Date().toISOString(),
+      configPath,
+      overallStatus: buildStatus(totals.violations, totals.incomplete),
+      totals,
+      pages: pageResults
+    };
+
+    const outputPath = buildOutputPath(configPath, config);
+    await writeJsonFile(outputPath, report);
+    console.log(`Audit report written to ${outputPath}`);
+    console.log(`Overall status: ${report.overallStatus}`);
+  } finally {
+    await browser.close();
+  }
+}
+
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(message);
+  process.exitCode = 1;
+});

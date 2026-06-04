@@ -1,0 +1,4 @@
+interface:
+  display_name: "A11y Audit Guide"
+  short_description: "Spring Thymeleaf 접근성 진단과 수정 가이드"
+  default_prompt: "Use $a11y-audit-guide to audit Spring Thymeleaf pages and produce an accessibility fix guide."
