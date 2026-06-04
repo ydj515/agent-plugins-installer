@@ -53,10 +53,10 @@
       "category": "Coding"
     },
     {
-      "name": "spring-thymeleaf-a11y",
+      "name": "web-a11y",
       "source": {
         "source": "local",
-        "path": "./.codex/plugins/spring-thymeleaf-a11y"
+        "path": "./.codex/plugins/web-a11y"
       },
       "policy": {
         "installation": "AVAILABLE",

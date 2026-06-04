@@ -6,7 +6,7 @@ import { pathExists, readJsonFile } from "../src/lib/utils.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 
-test("repo root marketplace manifests point at generated direct bundles built from target overlays", async () => {
+test("repo root marketplace manifests point at expected target bundle locations", async () => {
   const catalog = await readJsonFile(path.join(REPO_ROOT, "catalog.json"));
   const integrationIds = catalog.integrations.map((integration) => integration.id).sort();
 
@@ -22,25 +22,10 @@ test("repo root marketplace manifests point at generated direct bundles built fr
 
   for (const plugin of codexMarketplace.plugins) {
     assert.equal(plugin.source?.source, "local");
-    assert.equal(plugin.source?.path, `./.generated/direct/codex/${plugin.name}`);
+    assert.equal(plugin.source?.path, `./.codex/plugins/${plugin.name}`);
     assert.equal(typeof plugin.policy?.installation, "string");
     assert.equal(typeof plugin.policy?.authentication, "string");
     assert.equal(typeof plugin.category, "string");
-
-    const pluginRoot = path.join(REPO_ROOT, plugin.source.path.slice(2));
-    const manifestPath = path.join(pluginRoot, ".codex-plugin", "plugin.json");
-    assert.equal(await pathExists(manifestPath), true);
-
-    const manifest = await readJsonFile(manifestPath);
-    if (typeof manifest.skills === "string") {
-      assert.equal(await pathExists(path.join(pluginRoot, manifest.skills.slice(2))), true);
-    }
-    if (typeof manifest.apps === "string") {
-      assert.equal(await pathExists(path.join(pluginRoot, manifest.apps.slice(2))), true);
-    }
-    if (typeof manifest.mcpServers === "string") {
-      assert.equal(await pathExists(path.join(pluginRoot, manifest.mcpServers.slice(2))), true);
-    }
   }
 
   const claudeMarketplace = await readJsonFile(

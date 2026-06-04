@@ -1,0 +1,21 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "outputDir": "./reports/a11y",
+  "reportName": "local-dev-audit.json",
+  "markdownReportName": "local-dev-audit.md",
+  "browser": {
+    "headless": true
+  },
+  "pages": [
+    {
+      "name": "home",
+      "url": "/",
+      "waitForNetworkIdle": true
+    },
+    {
+      "name": "login",
+      "url": "/login",
+      "waitForSelector": "form"
+    }
+  ]
+}

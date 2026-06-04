@@ -1,9 +1,0 @@
-{
-  "name": "spring-thymeleaf-a11y",
-  "description": "Accessibility audit and safe-fix workflow skills for Spring Boot and Thymeleaf applications in Claude Code.",
-  "version": "0.1.0",
-  "author": {
-    "name": "Dongjin"
-  },
-  "license": "UNLICENSED"
-}

@@ -25,9 +25,9 @@
       "description": "Core workflow skills for authoring and reviewing mise configuration workflows in Claude Code."
     },
     {
-      "name": "spring-thymeleaf-a11y",
-      "source": "./.generated/direct/claude/spring-thymeleaf-a11y",
-      "description": "Accessibility audit and safe-fix workflow skills for Spring Boot and Thymeleaf apps in Claude Code."
+      "name": "web-a11y",
+      "source": "./.generated/direct/claude/web-a11y",
+      "description": "Playwright-based accessibility audit reports for React, Next.js, Thymeleaf, and other web app URLs in Claude Code."
     }
   ]
 }

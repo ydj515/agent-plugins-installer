@@ -14,7 +14,7 @@ The bundled catalog currently includes these integrations:
 - `vercel`
 - `superpowers`
 - `mise-workflows`
-- `spring-thymeleaf-a11y`
+- `web-a11y`
 
 Supported targets:
 
@@ -65,7 +65,7 @@ npx agent-plugins-installer install codex --scope workspace --plugins github
 npx agent-plugins-installer install claude --scope user --plugins github,vercel
 npx agent-plugins-installer install gemini --scope user --plugins vercel
 npx agent-plugins-installer install codex --scope workspace --plugins mise-workflows
-npx agent-plugins-installer install codex --scope workspace --plugins spring-thymeleaf-a11y
+npx agent-plugins-installer install codex --scope workspace --plugins web-a11y
 ```
 
 List installed and available integrations:

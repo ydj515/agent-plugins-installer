@@ -199,7 +199,7 @@ test("codex project 설치는 동일한 generated direct bundle entry를 재사�
   );
 });
 
-test("codex workspace 설치는 spring-thymeleaf-a11y plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
+test("codex workspace 설치는 web-a11y plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");
   const fake = await createFakeCommands(t);
@@ -213,7 +213,7 @@ test("codex workspace 설치는 spring-thymeleaf-a11y plugin 디렉터리와 mar
       "--cwd",
       projectDir,
       "--plugins",
-      "spring-thymeleaf-a11y"
+      "web-a11y"
     ],
     {
       env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
@@ -227,7 +227,7 @@ test("codex workspace 설치는 spring-thymeleaf-a11y plugin 디렉터리와 mar
         projectDir,
         ".codex",
         "plugins",
-        "spring-thymeleaf-a11y",
+        "web-a11y",
         ".codex-plugin",
         "plugin.json"
       )
@@ -239,16 +239,16 @@ test("codex workspace 설치는 spring-thymeleaf-a11y plugin 디렉터리와 mar
     path.join(projectDir, ".agents", "plugins", "marketplace.json")
   );
   assert.equal(
-    marketplace.plugins.some((plugin) => plugin.name === "spring-thymeleaf-a11y"),
+    marketplace.plugins.some((plugin) => plugin.name === "web-a11y"),
     true
   );
   assert.equal(
-    marketplace.plugins.find((plugin) => plugin.name === "spring-thymeleaf-a11y").source.path,
-    "./.codex/plugins/spring-thymeleaf-a11y"
+    marketplace.plugins.find((plugin) => plugin.name === "web-a11y").source.path,
+    "./.codex/plugins/web-a11y"
   );
 
   const commandLog = await fs.readFile(fake.codexLog, "utf8");
-  assert.match(commandLog, /plugin add spring-thymeleaf-a11y@agent-plugins-installer/);
+  assert.match(commandLog, /plugin add web-a11y@agent-plugins-installer/);
 });
 
 test("install all --scope project 는 codex, claude, gemini를 함께 설치한다", async (t) => {

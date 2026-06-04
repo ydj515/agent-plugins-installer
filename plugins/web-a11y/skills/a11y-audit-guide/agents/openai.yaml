@@ -1,0 +1,4 @@
+interface:
+  display_name: "A11y Audit Guide"
+  short_description: "URL 기준 웹 접근성 진단 보고서"
+  default_prompt: "Use $a11y-audit-guide to audit a web URL with Playwright and produce JSON and Markdown accessibility reports."

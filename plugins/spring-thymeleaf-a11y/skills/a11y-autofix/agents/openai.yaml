@@ -1,4 +1,0 @@
-interface:
-  display_name: "A11y Autofix"
-  short_description: "Spring Thymeleaf 안전한 접근성 자동 수정"
-  default_prompt: "Use $a11y-autofix to apply safe Thymeleaf accessibility fixes and rerun audits."

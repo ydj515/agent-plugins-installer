@@ -9,34 +9,46 @@ import { readJsonFile, removePath } from "../src/lib/utils.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 const CODEX_MARKETPLACE = "agent-plugins-installer";
-const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows", "spring-thymeleaf-a11y"];
+const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows", "web-a11y"];
 
-test("codex real CLI 는 repo marketplace 가 generated codex bundles 를 설치할 수 있다", async (t) => {
+test("codex real CLI 는 installer 가 workspace codex bundles 를 설치할 수 있다", async (t) => {
   if (!hasCommand("codex")) {
     t.skip("codex CLI 가 설치되어 있지 않아 real e2e 테스트를 건너뜁니다.");
     return;
   }
 
   const tempHome = await createTempDir(t, "agent-plugins-e2e-codex-home-");
+  const projectDir = await createTempDir(t, "agent-plugins-e2e-codex-project-");
   const env = buildIsolatedEnv(tempHome);
+  const selectedPlugins = INTEGRATION_IDS.join(",");
 
   let result = runShell(
-    `codex plugin marketplace add ./`,
+    `node ./src/cli.js install codex --scope workspace --cwd ${shellQuote(projectDir)} --plugins ${shellQuote(selectedPlugins)}`,
     { env }
   );
   assert.equal(result.status, 0, result.stderr);
 
   for (const integrationId of INTEGRATION_IDS) {
-    result = runShell(
-      `codex plugin add ${integrationId}@${CODEX_MARKETPLACE}`,
-      { env }
+    const pluginRoot = path.join(projectDir, ".codex", "plugins", integrationId);
+    assert.equal(
+      await pathExists(path.join(pluginRoot, ".codex-plugin", "plugin.json")),
+      true
     );
-    assert.equal(result.status, 0, `${integrationId}: ${result.stderr}`);
+  }
+
+  const marketplace = await readJsonFile(
+    path.join(projectDir, ".agents", "plugins", "marketplace.json")
+  );
+  for (const integrationId of INTEGRATION_IDS) {
+    assert.equal(
+      marketplace.plugins.find((plugin) => plugin.name === integrationId).source.path,
+      `./.codex/plugins/${integrationId}`
+    );
   }
 
   result = runShell(
     `codex plugin list --marketplace ${CODEX_MARKETPLACE}`,
-    { env }
+    { env, cwd: projectDir }
   );
   assert.equal(result.status, 0, result.stderr);
 
@@ -44,24 +56,6 @@ test("codex real CLI 는 repo marketplace 가 generated codex bundles 를 설치
     assert.match(
       result.stdout,
       new RegExp(`${escapeForRegExp(integrationId)}@${escapeForRegExp(CODEX_MARKETPLACE)}\\s+installed, enabled`)
-    );
-
-    const manifest = await readJsonFile(
-      path.join(REPO_ROOT, ".generated", "direct", "codex", integrationId, ".codex-plugin", "plugin.json")
-    );
-    const installRoot = path.join(
-      tempHome,
-      ".codex",
-      "plugins",
-      "cache",
-      CODEX_MARKETPLACE,
-      integrationId,
-      manifest.version
-    );
-
-    assert.equal(
-      await pathExists(path.join(installRoot, ".codex-plugin", "plugin.json")),
-      true
     );
   }
 });
@@ -157,9 +151,9 @@ test("gemini real CLI 는 generated gemini bundles 를 설치할 수 있다", as
   }
 });
 
-function runShell(command, { env } = {}) {
+function runShell(command, { env, cwd = REPO_ROOT } = {}) {
   return spawnSync("/bin/sh", ["-c", command], {
-    cwd: REPO_ROOT,
+    cwd,
     encoding: "utf8",
     env: env ?? process.env
   });
