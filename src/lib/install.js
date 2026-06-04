@@ -6,6 +6,7 @@ import {
 } from "./adapters.js";
 import { resolveIntegrationsForTarget } from "./catalog.js";
 import {
+  CODEX_MARKETPLACE_NAME,
   CLAUDE_MARKETPLACE_NAME,
   TEMP_ROOT_DIR,
   STRATEGIES,
@@ -151,7 +152,8 @@ export async function installTarget({
         scope,
         cwd,
         packageVersion,
-        force
+        force,
+        env
       });
     case STRATEGIES.CLAUDE_LOCAL:
       return installClaudeIntegrations({
@@ -194,10 +196,12 @@ async function installCodexIntegrations({
   scope,
   cwd,
   packageVersion,
-  force
+  force,
+  env
 }) {
   const marketplacePath = adapter.resolveCodexMarketplacePath(scope, cwd);
   const marketplaceDir = path.dirname(marketplacePath);
+  const marketplaceRoot = adapter.resolveCodexMarketplaceRoot(scope, cwd, env);
   const manifests = await Promise.all(integrations.map((integration) => readCodexPluginManifest(integration)));
   const mergedMarketplace = await buildCodexMarketplace({
     adapter,
@@ -243,6 +247,27 @@ async function installCodexIntegrations({
       throw installError(`Failed to write Codex marketplace file "${marketplacePath}".`, error);
     }
 
+    await ensureCodexMarketplaceConfigured({
+      adapter,
+      cwd,
+      env,
+      marketplaceRoot
+    });
+
+    for (const [index, integration] of integrations.entries()) {
+      const args = adapter.getCodexPluginAddArgs(manifests[index].name);
+      const result = await runCommand("codex", args, { cwd, env });
+      if (result.code !== 0) {
+        throw withFailedIntegrationId(externalCommandError("codex", args, result), integration.id);
+      }
+    }
+
+    const listArgs = adapter.getCodexPluginListArgs();
+    const listResult = await runCommand("codex", listArgs, { cwd, env });
+    if (listResult.code !== 0) {
+      throw externalCommandError("codex", listArgs, listResult);
+    }
+
     return {
       action: "install",
       target: "codex",
@@ -253,7 +278,7 @@ async function installCodexIntegrations({
       skipped: [],
       failed: [],
       ok: true,
-      note: "Restart Codex and install or enable the plugin from Plugin Directory."
+      note: `Codex plugins were added from ${CODEX_MARKETPLACE_NAME}. Restart Codex or start a new thread to load installed skills.`
     };
   } finally {
     await cleanupPreparedEntries(preparedEntries);
@@ -348,6 +373,14 @@ async function buildCodexMarketplace({
   }
 
   return nextMarketplace;
+}
+
+async function ensureCodexMarketplaceConfigured({ adapter, cwd, env, marketplaceRoot }) {
+  const addArgs = adapter.getCodexMarketplaceAddArgs(marketplaceRoot);
+  const addResult = await runCommand("codex", addArgs, { cwd, env });
+  if (addResult.code !== 0) {
+    throw externalCommandError("codex", addArgs, addResult);
+  }
 }
 
 function resolveCodexMarketplaceBaseDir(marketplacePath) {

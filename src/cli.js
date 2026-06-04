@@ -2,7 +2,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PACKAGE_ROOT, SCOPES, TARGETS } from "./lib/constants.js";
+import { PACKAGE_ROOT, SCOPES, SCOPE_ALIASES, TARGETS } from "./lib/constants.js";
 import { assertCatalogSourcesExist, loadCatalog } from "./lib/catalog.js";
 import { interactiveTtyError, toCliError, usageError } from "./lib/errors.js";
 import {
@@ -146,10 +146,11 @@ function parseCommandArgs(command, args) {
 
     if (argument === "--scope") {
       const nextValue = rest[index + 1];
-      if (!SCOPES.includes(nextValue)) {
+      const normalizedScope = normalizeScope(nextValue);
+      if (!normalizedScope) {
         throw usageError(`Invalid value for --scope: "${nextValue}".`);
       }
-      parsed.scope = nextValue;
+      parsed.scope = normalizedScope;
       index += 1;
       continue;
     }
@@ -247,14 +248,26 @@ function parseCommandArgs(command, args) {
   return parsed;
 }
 
+function normalizeScope(value) {
+  if (SCOPES.includes(value)) {
+    return value;
+  }
+
+  if (Object.hasOwn(SCOPE_ALIASES, value)) {
+    return SCOPE_ALIASES[value];
+  }
+
+  return undefined;
+}
+
 function buildUsage() {
   return [
     "Usage:",
     "  npx agent-plugins-installer",
-    "  npx agent-plugins-installer install <codex|claude|gemini|all> [--scope user|project] [--cwd <path>] [--dry-run] [--force] [--plugins <a,b>] [--tag <tag>] [--group <group>]",
-    "  npx agent-plugins-installer list <codex|claude|gemini|all> [--scope user|project] [--cwd <path>] [--plugins <a,b>] [--tag <tag>] [--group <group>]",
-    "  npx agent-plugins-installer remove <codex|claude|gemini|all> [--scope user|project] [--cwd <path>] [--dry-run] (--plugins <a,b> | --tag <tag> | --group <group>)",
-    "  npx agent-plugins-installer update <codex|claude|gemini|all> [--scope user|project] [--cwd <path>] [--dry-run] [--plugins <a,b>] [--tag <tag>] [--group <group>]"
+    "  npx agent-plugins-installer install <codex|claude|gemini|all> [--scope user|workspace|project] [--cwd <path>] [--dry-run] [--force] [--plugins <a,b>] [--tag <tag>] [--group <group>]",
+    "  npx agent-plugins-installer list <codex|claude|gemini|all> [--scope user|workspace|project] [--cwd <path>] [--plugins <a,b>] [--tag <tag>] [--group <group>]",
+    "  npx agent-plugins-installer remove <codex|claude|gemini|all> [--scope user|workspace|project] [--cwd <path>] [--dry-run] (--plugins <a,b> | --tag <tag> | --group <group>)",
+    "  npx agent-plugins-installer update <codex|claude|gemini|all> [--scope user|workspace|project] [--cwd <path>] [--dry-run] [--plugins <a,b>] [--tag <tag>] [--group <group>]"
   ].join("\n");
 }
 

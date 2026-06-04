@@ -61,11 +61,11 @@ npx agent-plugins-installer
 Direct install
 
 ```bash
-npx agent-plugins-installer install codex --scope project --plugins github
+npx agent-plugins-installer install codex --scope workspace --plugins github
 npx agent-plugins-installer install claude --scope user --plugins github,vercel
 npx agent-plugins-installer install gemini --scope user --plugins vercel
-npx agent-plugins-installer install codex --scope project --plugins mise-workflows
-npx agent-plugins-installer install codex --scope project --plugins spring-thymeleaf-a11y
+npx agent-plugins-installer install codex --scope workspace --plugins mise-workflows
+npx agent-plugins-installer install codex --scope workspace --plugins spring-thymeleaf-a11y
 ```
 
 List installed and available integrations:
@@ -77,13 +77,13 @@ npx agent-plugins-installer list all --scope user
 Remove integrations:
 
 ```bash
-npx agent-plugins-installer remove codex --scope project --plugins github
+npx agent-plugins-installer remove codex --scope workspace --plugins github
 ```
 
 Update integrations:
 
 ```bash
-npx agent-plugins-installer update codex --scope project --plugins github
+npx agent-plugins-installer update codex --scope workspace --plugins github
 ```
 
 ## Target Behavior
@@ -92,7 +92,10 @@ npx agent-plugins-installer update codex --scope project --plugins github
 
 - Copies the plugin source into `.codex/plugins/<plugin-id>`.
 - Uses `~/.agents/plugins/marketplace.json` for `user` scope and `<cwd>/.agents/plugins/marketplace.json` for `project` scope.
-- After installation, you may need to restart Codex and install or enable the plugin from Plugin Directory.
+- `workspace` is accepted as an alias for `project`.
+- Runs `codex plugin marketplace add <marketplace-root>`, `codex plugin add <plugin>@agent-plugins-installer`, and `codex plugin list --marketplace agent-plugins-installer`.
+- Codex currently records installed plugin cache and enabled state through the Codex CLI configuration flow. Project `.codex/config.toml` is only a trusted-project config layer, so this installer does not rely on it as the sole plugin activation mechanism.
+- After installation, restart Codex or start a new thread so newly installed skills are loaded.
 
 ### Claude Code
 

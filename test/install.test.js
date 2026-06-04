@@ -13,17 +13,24 @@ const CLI_PATH = fileURLToPath(new URL("../src/cli.js", import.meta.url));
 
 test("codex project 설치는 plugin 디렉터리와 marketplace.json을 만든다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
 
-  const result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  const result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
 
   assert.equal(result.status, 0);
   assert.equal(
@@ -45,10 +52,17 @@ test("codex project 설치는 plugin 디렉터리와 marketplace.json을 만든�
     "./.codex/plugins/github"
   );
   assert.match(result.stdout, /\[agent-plugins-installer\] install summary/);
+
+  const commandLog = await fs.readFile(fake.codexLog, "utf8");
+  assert.match(commandLog, new RegExp(`plugin marketplace add ${escapeForRegExp(projectDir)}`));
+  assert.match(commandLog, /plugin add github@agent-plugins-installer/);
+  assert.match(commandLog, /plugin list --marketplace agent-plugins-installer/);
 });
 
 test("codex project 설치는 stale direct marketplace entry가 있으면 local bundle 경로로 교체한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
   const marketplacePath = path.join(projectDir, ".agents", "plugins", "marketplace.json");
 
   await fs.mkdir(path.dirname(marketplacePath), { recursive: true });
@@ -81,16 +95,21 @@ test("codex project 설치는 stale direct marketplace entry가 있으면 local 
     "utf8"
   );
 
-  const result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  const result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
 
   assert.equal(result.status, 0);
 
@@ -103,6 +122,8 @@ test("codex project 설치는 stale direct marketplace entry가 있으면 local 
 
 test("codex project 설치는 동일한 generated direct bundle entry를 재사용한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
   const marketplacePath = path.join(projectDir, ".agents", "plugins", "marketplace.json");
   const directManifestPath = path.join(
     projectDir,
@@ -149,16 +170,21 @@ test("codex project 설치는 동일한 generated direct bundle entry를 재사�
     "utf8"
   );
 
-  const result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  const result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
 
   assert.equal(result.status, 0);
   assert.equal(
@@ -173,19 +199,26 @@ test("codex project 설치는 동일한 generated direct bundle entry를 재사�
   );
 });
 
-test("codex project 설치는 spring-thymeleaf-a11y plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
+test("codex workspace 설치는 spring-thymeleaf-a11y plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
 
-  const result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "spring-thymeleaf-a11y"
-  ]);
+  const result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "workspace",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "spring-thymeleaf-a11y"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
 
   assert.equal(result.status, 0);
   assert.equal(
@@ -213,6 +246,9 @@ test("codex project 설치는 spring-thymeleaf-a11y plugin 디렉터리와 marke
     marketplace.plugins.find((plugin) => plugin.name === "spring-thymeleaf-a11y").source.path,
     "./.codex/plugins/spring-thymeleaf-a11y"
   );
+
+  const commandLog = await fs.readFile(fake.codexLog, "utf8");
+  assert.match(commandLog, /plugin add spring-thymeleaf-a11y@agent-plugins-installer/);
 });
 
 test("install all --scope project 는 codex, claude, gemini를 함께 설치한다", async (t) => {
@@ -591,8 +627,18 @@ async function createFakeCommands(
   } = {}
 ) {
   const binDir = await createTempDir(t, "agent-plugins-bin-");
+  const codexLog = path.join(binDir, "codex.log");
   const claudeLog = path.join(binDir, "claude.log");
   const geminiLog = path.join(binDir, "gemini.log");
+
+  await writeExecutable(
+    path.join(binDir, "codex"),
+    `#!/bin/sh
+set -eu
+printf '%s\\n' "$*" >> "${codexLog}"
+exit 0
+`
+  );
 
   await writeExecutable(
     path.join(binDir, "claude"),
@@ -657,6 +703,7 @@ exit ${geminiExitCode}
 
   return {
     binDir,
+    codexLog,
     claudeLog,
     geminiLog
   };

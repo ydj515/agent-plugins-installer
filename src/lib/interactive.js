@@ -14,7 +14,7 @@ export async function runInteractiveWizard(catalog, io) {
     message: "Step 2 Select an install scope",
     items: [
       { label: "user", value: "user" },
-      { label: "project", value: "project" }
+      { label: "workspace", value: "project" }
     ],
     io: promptIo
   });

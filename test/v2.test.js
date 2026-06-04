@@ -13,29 +13,41 @@ const CLI_PATH = fileURLToPath(new URL("../src/cli.js", import.meta.url));
 
 test("codex remove 는 plugin 디렉터리와 marketplace entry 를 함께 지운다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
 
-  let result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github,vercel"
-  ]);
+  let result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github,vercel"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
   assert.equal(result.status, 0);
 
-  result = runCli([
-    "remove",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  result = runCli(
+    [
+      "remove",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
   assert.equal(result.status, 0);
 
   assert.equal(
@@ -56,6 +68,8 @@ test("codex remove 는 plugin 디렉터리와 marketplace entry 를 함께 지�
 
 test("codex update 는 손상된 파일을 원본으로 복구한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
   const skillFile = path.join(
     projectDir,
     ".codex",
@@ -66,48 +80,65 @@ test("codex update 는 손상된 파일을 원본으로 복구한다", async (t)
     "SKILL.md"
   );
 
-  let result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  let result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
   assert.equal(result.status, 0);
 
   const originalContents = await fs.readFile(skillFile, "utf8");
   await fs.writeFile(skillFile, "tampered\n", "utf8");
 
-  result = runCli([
-    "update",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  result = runCli(
+    [
+      "update",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
   assert.equal(result.status, 0);
   assert.equal(await fs.readFile(skillFile, "utf8"), originalContents);
 });
 
 test("list codex 는 installed 와 available 상태를 출력한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
 
-  let result = runCli([
-    "install",
-    "codex",
-    "--scope",
-    "project",
-    "--cwd",
-    projectDir,
-    "--plugins",
-    "github"
-  ]);
+  let result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "project",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "github"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
   assert.equal(result.status, 0);
 
   result = runCli([
@@ -250,8 +281,18 @@ async function createTempDir(t, prefix) {
 
 async function createFakeCommands(t) {
   const binDir = await createTempDir(t, "agent-plugins-bin-");
+  const codexLog = path.join(binDir, "codex.log");
   const claudeLog = path.join(binDir, "claude.log");
   const geminiLog = path.join(binDir, "gemini.log");
+
+  await writeExecutable(
+    path.join(binDir, "codex"),
+    `#!/bin/sh
+set -eu
+printf '%s\\n' "$*" >> "${codexLog}"
+exit 0
+`
+  );
 
   await writeExecutable(
     path.join(binDir, "claude"),
@@ -277,6 +318,7 @@ exit 0
 
   return {
     binDir,
+    codexLog,
     claudeLog,
     geminiLog
   };

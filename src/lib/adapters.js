@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import {
+  CODEX_MARKETPLACE_NAME,
   CLAUDE_MARKETPLACE_NAME,
   STRATEGIES,
   TARGETS
@@ -35,6 +36,9 @@ export function getTargetAdapter(target) {
     resolveCodexMarketplacePath(scope, cwd, _env = process.env, homeDir = os.homedir()) {
       return resolveCodexMarketplacePath(scope, cwd, homeDir);
     },
+    resolveCodexMarketplaceRoot(scope, cwd, _env = process.env, homeDir = os.homedir()) {
+      return scope === "project" ? cwd : homeDir;
+    },
     resolveClaudeMarketplaceRoot(scope, cwd, _env = process.env, homeDir = os.homedir()) {
       return resolveClaudeMarketplaceRoot(scope, cwd, homeDir);
     },
@@ -51,6 +55,18 @@ export function getTargetAdapter(target) {
     buildCodexMarketplaceSourcePath(installRoot, integrationId, scope, cwd, homeDir = os.homedir()) {
       const marketplaceBaseDir = scope === "project" ? cwd : homeDir;
       return toRelativeMarketplacePath(marketplaceBaseDir, path.join(installRoot, integrationId));
+    },
+    getCodexMarketplaceAddArgs(marketplaceRoot) {
+      return ["plugin", "marketplace", "add", marketplaceRoot];
+    },
+    getCodexPluginAddArgs(pluginName) {
+      return ["plugin", "add", `${pluginName}@${CODEX_MARKETPLACE_NAME}`];
+    },
+    getCodexPluginRemoveArgs(pluginName) {
+      return ["plugin", "remove", `${pluginName}@${CODEX_MARKETPLACE_NAME}`];
+    },
+    getCodexPluginListArgs() {
+      return ["plugin", "list", "--marketplace", CODEX_MARKETPLACE_NAME];
     },
     buildClaudeMarketplaceSourcePath(installRoot, integrationId, scope, cwd, homeDir = os.homedir()) {
       const marketplaceRoot = resolveClaudeMarketplaceRoot(scope, cwd, homeDir);

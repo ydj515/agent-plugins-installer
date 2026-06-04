@@ -195,7 +195,7 @@ async function removeTarget({ catalog, target, scope, cwd, dryRun, selection, en
   const integrations = resolveIntegrationsForTarget(catalog, target, selection);
 
   if (target === "codex") {
-    return removeCodexTarget({ adapter, target, scope, cwd, dryRun, installRoot, integrations });
+    return removeCodexTarget({ adapter, target, scope, cwd, dryRun, installRoot, integrations, env });
   }
 
   if (target === "claude") {
@@ -205,7 +205,7 @@ async function removeTarget({ catalog, target, scope, cwd, dryRun, selection, en
   return removeGeminiTarget({ adapter, target, scope, cwd, dryRun, installRoot, integrations, env });
 }
 
-async function removeCodexTarget({ adapter, target, scope, cwd, dryRun, installRoot, integrations }) {
+async function removeCodexTarget({ adapter, target, scope, cwd, dryRun, installRoot, integrations, env }) {
   const removable = [];
   const skipped = [];
 
@@ -252,6 +252,15 @@ async function removeCodexTarget({ adapter, target, scope, cwd, dryRun, installR
       target,
       scope
     });
+
+    for (const integration of removable) {
+      const args = adapter.getCodexPluginRemoveArgs(integration.id);
+      const result = await runCommand("codex", args, { cwd, env });
+      if (result.code !== 0) {
+        throw withFailedIntegrationId(externalCommandError("codex", args, result), integration.id);
+      }
+    }
+
     await removeCodexMarketplaceEntries({
       adapter,
       marketplacePath,

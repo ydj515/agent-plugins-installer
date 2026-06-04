@@ -12,11 +12,15 @@ export const TEMP_META_FILE = ".agent-plugins-installer-tmp.json";
 export const STALE_WINDOW_MS = 10 * 60 * 1000;
 export const TARGETS = ["codex", "claude", "gemini"];
 export const SCOPES = ["user", "project"];
+export const SCOPE_ALIASES = {
+  workspace: "project"
+};
 export const STRATEGIES = {
   CODEX_LOCAL: "local-marketplace-provision",
   CLAUDE_LOCAL: "local-marketplace-install",
   GEMINI_LOCAL: "local-extension-install"
 };
+export const CODEX_MARKETPLACE_NAME = "agent-plugins-installer";
 export const CLAUDE_MARKETPLACE_NAME = "agent-plugins-installer";
 export const EXIT_CODES = {
   SUCCESS: 0,

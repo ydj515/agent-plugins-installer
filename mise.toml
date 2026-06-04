@@ -44,12 +44,20 @@ set -eu
 PACK_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-pack.XXXXXX\")\"
 PROJECT_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-smoke.XXXXXX\")\"
 CACHE_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-npm-cache.XXXXXX\")\"
+HOME_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-home.XXXXXX\")\"
+BIN_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-bin.XXXXXX\")\"
 cleanup() {
-  rm -rf \"$PACK_DIR\" \"$PROJECT_DIR\" \"$CACHE_DIR\"
+  rm -rf \"$PACK_DIR\" \"$PROJECT_DIR\" \"$CACHE_DIR\" \"$HOME_DIR\" \"$BIN_DIR\"
 }
 trap cleanup EXIT INT TERM
+cat > \"$BIN_DIR/codex\" <<'SH'
+#!/bin/sh
+set -eu
+exit 0
+SH
+chmod +x \"$BIN_DIR/codex\"
 TARBALL=\"$(mise exec node@24 -- npm pack --silent --pack-destination \"$PACK_DIR\")\"
-NPM_CONFIG_CACHE=\"$CACHE_DIR\" mise exec node@24 -- npx --yes --package \"$PACK_DIR/$TARBALL\" agent-plugins-installer install codex --scope project --cwd \"$PROJECT_DIR\" --plugins github
+mise exec node@24 -- env HOME=\"$HOME_DIR\" PATH=\"$BIN_DIR:$PATH\" NPM_CONFIG_CACHE=\"$CACHE_DIR\" npx --yes --package \"$PACK_DIR/$TARBALL\" agent-plugins-installer install codex --scope workspace --cwd \"$PROJECT_DIR\" --plugins github
 test -f \"$PROJECT_DIR/.codex/plugins/github/.codex-plugin/plugin.json\"
 test -f \"$PROJECT_DIR/.agents/plugins/marketplace.json\"
 """
