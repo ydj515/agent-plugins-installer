@@ -18,3 +18,6 @@ coverage/
 tmp/
 .tmp/
 .temp/
+
+# playwright test outputs
+.playwright-mcp/

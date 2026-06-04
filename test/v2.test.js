@@ -162,7 +162,7 @@ test("gemini update 는 설치된 extension 만 재설치하고 로컬 bundle �
   assert.doesNotMatch(log, /extensions install .*vercel/);
 });
 
-test("gemini project remove 는 workspace 비활성화만 수행하고 bundle 은 유지한다", async (t) => {
+test("gemini project remove 는 workspace 비활성화와 로컬 .gemini bundle 유지까지 수행한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");
   const fake = await createFakeCommands(t);
@@ -188,7 +188,9 @@ test("gemini project remove 는 workspace 비활성화만 수행하고 bundle �
   const state = await readJsonFile(path.join(projectDir, ".gemini", STATE_FILE));
   assert.equal(Object.hasOwn(state.integrations, "github"), false);
   assert.equal(
-    await pathExists(path.join(homeDir, ".gemini", "extensions", "github", "gemini-extension.json")),
+    await pathExists(
+      path.join(projectDir, ".gemini", "extensions", "github", "gemini-extension.json")
+    ),
     true
   );
 

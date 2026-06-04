@@ -9,6 +9,7 @@ const TARGETS = ["codex", "claude", "gemini"];
 const SHARED_SOURCE_IGNORES = new Set([
   ".DS_Store",
   "targets",
+  "node_modules",
   ".codex-plugin",
   ".claude-plugin",
   "gemini-extension.json",

@@ -9,7 +9,7 @@ import { readJsonFile, removePath } from "../src/lib/utils.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 const CODEX_MARKETPLACE = "agent-plugins-installer";
-const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows"];
+const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows", "spring-thymeleaf-a11y"];
 
 test("codex real CLI 는 repo marketplace 가 generated codex bundles 를 설치할 수 있다", async (t) => {
   if (!hasCommand("codex")) {

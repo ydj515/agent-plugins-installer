@@ -104,12 +104,12 @@ export function toRelativeMarketplacePath(baseDir, targetPath) {
   return `./${relative}`;
 }
 
-export async function runCommand(command, args, { cwd, env } = {}) {
+export async function runCommand(command, args, { cwd, env, stdinText } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
       env,
-      stdio: ["ignore", "pipe", "pipe"]
+      stdio: ["pipe", "pipe", "pipe"]
     });
 
     let stdout = "";
@@ -122,6 +122,11 @@ export async function runCommand(command, args, { cwd, env } = {}) {
     child.stderr.on("data", (chunk) => {
       stderr += chunk.toString();
     });
+
+    if (typeof stdinText === "string" && stdinText.length > 0) {
+      child.stdin.write(stdinText);
+    }
+    child.stdin.end();
 
     child.on("error", reject);
     child.on("close", (code) => {

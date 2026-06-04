@@ -479,7 +479,7 @@ async function removeGeminiTarget({
     dryRun,
     note:
       scope === "project"
-        ? "Gemini project scope removal disables the extension for this workspace and keeps the shared bundle in ~/.gemini/extensions."
+        ? "Gemini project scope removal disables the extension for this workspace and keeps the shared bundle in ./.gemini/extensions."
         : undefined
   };
 }

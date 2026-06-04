@@ -31,6 +31,7 @@ import {
   readJsonFile,
   removePath,
   runCommand,
+  toRelativeMarketplacePath,
   writeJsonFile
 } from "./utils.js";
 
@@ -295,6 +296,7 @@ async function buildCodexMarketplace({
         : { displayName: "Agent Plugins Installer" },
     plugins: [...existingMarketplace.plugins]
   };
+  const marketplaceBaseDir = resolveCodexMarketplaceBaseDir(marketplacePath);
 
   for (const [index, integration] of integrations.entries()) {
     const manifest = manifests[index];
@@ -324,16 +326,21 @@ async function buildCodexMarketplace({
     }
 
     const existingEntry = nextMarketplace.plugins[existingIndex];
-    const existingPath =
-      existingEntry &&
-      typeof existingEntry === "object" &&
-      existingEntry.source &&
-      typeof existingEntry.source === "object" &&
-      existingEntry.source.path;
+    const resolution = await resolveCodexMarketplaceEntryConflict({
+      existingEntry,
+      desiredSourcePath: sourcePath,
+      integrationId: integration.id,
+      manifest,
+      marketplaceBaseDir
+    });
 
-    if (typeof existingPath === "string" && existingPath !== sourcePath) {
+    if (resolution.action === "preserve") {
+      continue;
+    }
+
+    if (resolution.action === "conflict") {
       throw safetyError(
-        `Codex marketplace already contains plugin "${manifest.name}" at "${existingPath}". Resolve the conflict manually before reinstalling.`
+        `Codex marketplace already contains plugin "${manifest.name}" at "${resolution.existingPath}". Resolve the conflict manually before reinstalling.`
       );
     }
 
@@ -341,6 +348,58 @@ async function buildCodexMarketplace({
   }
 
   return nextMarketplace;
+}
+
+function resolveCodexMarketplaceBaseDir(marketplacePath) {
+  return path.resolve(path.dirname(marketplacePath), "..", "..");
+}
+
+async function resolveCodexMarketplaceEntryConflict({
+  existingEntry,
+  desiredSourcePath,
+  integrationId,
+  manifest,
+  marketplaceBaseDir
+}) {
+  const existingPath =
+    existingEntry &&
+    typeof existingEntry === "object" &&
+    existingEntry.source &&
+    typeof existingEntry.source === "object" &&
+    existingEntry.source.path;
+
+  if (typeof existingPath !== "string" || existingPath === desiredSourcePath) {
+    return { action: "replace" };
+  }
+
+  const directBundlePath = toRelativeMarketplacePath(
+    marketplaceBaseDir,
+    path.join(marketplaceBaseDir, ".generated", "direct", "codex", integrationId)
+  );
+
+  if (existingPath !== directBundlePath) {
+    return { action: "conflict", existingPath };
+  }
+
+  const directManifestPath = path.join(
+    marketplaceBaseDir,
+    existingPath.slice(2),
+    ".codex-plugin",
+    "plugin.json"
+  );
+
+  if (!(await pathExists(directManifestPath))) {
+    return { action: "replace" };
+  }
+
+  try {
+    const existingManifest = await readJsonFile(directManifestPath);
+    if (JSON.stringify(existingManifest) === JSON.stringify(manifest)) {
+      return { action: "preserve" };
+    }
+  } catch {}
+
+  return { action: "conflict", existingPath };
 }
 
 async function installClaudeIntegrations({
@@ -482,8 +541,26 @@ async function installGeminiIntegrations({
     });
 
     const installed = [];
+    const installedExtensionNames = await loadInstalledGeminiExtensionNames({ cwd, env });
 
     for (const integration of integrations) {
+      if (!installedExtensionNames.has(integration.id)) {
+        const bundlePath = path.join(installRoot, integration.id);
+        const installArgs = adapter.getGeminiInstallArgs(bundlePath);
+        const installResult = await runCommand("gemini", installArgs, {
+          cwd,
+          env,
+          stdinText: "y\n"
+        });
+        if (installResult.code !== 0) {
+          throw withFailedIntegrationId(
+            externalCommandError("gemini", installArgs, installResult),
+            integration.id
+          );
+        }
+        installedExtensionNames.add(integration.id);
+      }
+
       if (scope === "project") {
         const enableArgs = adapter.getGeminiEnableArgs(integration, scope);
         const enableResult = await runCommand("gemini", enableArgs, { cwd, env });
@@ -492,12 +569,6 @@ async function installGeminiIntegrations({
             externalCommandError("gemini", enableArgs, enableResult),
             integration.id
           );
-        }
-      } else {
-        const args = adapter.getGeminiInstallArgs(path.join(installRoot, integration.id));
-        const result = await runCommand("gemini", args, { cwd, env });
-        if (result.code !== 0) {
-          throw withFailedIntegrationId(externalCommandError("gemini", args, result), integration.id);
         }
       }
 
@@ -524,7 +595,7 @@ async function installGeminiIntegrations({
       ok: true,
       note:
         scope === "project"
-          ? "Restart Gemini CLI to load installed extensions. Gemini project scope uses ~/.gemini/extensions plus workspace activation."
+          ? "Restart Gemini CLI to load installed extensions. Gemini project scope uses ./.gemini/extensions plus workspace activation."
           : "Restart Gemini CLI to load installed extensions."
     };
   } finally {
@@ -656,15 +727,43 @@ async function ensureClaudeMarketplaceConfigured({ adapter, scope, cwd, env, mar
     throw installError("Failed to parse Claude marketplace list output.", error);
   }
 
-  if (
-    Array.isArray(marketplaces) &&
-    marketplaces.some(
-      (marketplace) =>
-        marketplace &&
-        typeof marketplace === "object" &&
-        marketplace.name === CLAUDE_MARKETPLACE_NAME
-    )
-  ) {
+  const existingMarketplace = Array.isArray(marketplaces)
+    ? marketplaces.find(
+        (marketplace) =>
+          marketplace &&
+          typeof marketplace === "object" &&
+          marketplace.name === CLAUDE_MARKETPLACE_NAME
+      )
+    : undefined;
+
+  if (existingMarketplace) {
+    const existingMarketplacePath =
+      typeof existingMarketplace.path === "string"
+        ? existingMarketplace.path
+        : typeof existingMarketplace.installLocation === "string"
+          ? existingMarketplace.installLocation
+          : "";
+
+    if (existingMarketplacePath && existingMarketplacePath !== marketplaceRoot) {
+      const removeArgs = adapter.getClaudeMarketplaceRemoveArgs(CLAUDE_MARKETPLACE_NAME);
+      const removeResult = await runCommand("claude", removeArgs, { cwd, env });
+      if (removeResult.code !== 0) {
+        throw externalCommandError("claude", removeArgs, removeResult);
+      }
+
+      const addArgs = adapter.getClaudeMarketplaceAddArgs(marketplaceRoot, scope);
+      const addResult = await runCommand("claude", addArgs, { cwd, env });
+      if (addResult.code !== 0) {
+        throw externalCommandError("claude", addArgs, addResult);
+      }
+      return;
+    }
+
+    const updateArgs = adapter.getClaudeMarketplaceUpdateArgs(CLAUDE_MARKETPLACE_NAME);
+    const updateResult = await runCommand("claude", updateArgs, { cwd, env });
+    if (updateResult.code !== 0) {
+      throw externalCommandError("claude", updateArgs, updateResult);
+    }
     return;
   }
 
@@ -673,6 +772,26 @@ async function ensureClaudeMarketplaceConfigured({ adapter, scope, cwd, env, mar
   if (addResult.code !== 0) {
     throw externalCommandError("claude", addArgs, addResult);
   }
+}
+
+async function loadInstalledGeminiExtensionNames({ cwd, env }) {
+  const args = ["extensions", "list"];
+  const result = await runCommand("gemini", args, { cwd, env });
+  if (result.code !== 0) {
+    throw externalCommandError("gemini", args, result);
+  }
+
+  const names = new Set();
+  const lines = `${result.stdout}\n${result.stderr}`.split(/\r?\n/);
+
+  for (const line of lines) {
+    const match = line.match(/^✓\s+([^\s(]+)\s+\(/);
+    if (match) {
+      names.add(match[1]);
+    }
+  }
+
+  return names;
 }
 
 function resolveFailedIntegrationIds(requestedIntegrationIds, error) {

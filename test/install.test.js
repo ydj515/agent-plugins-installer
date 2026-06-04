@@ -47,6 +47,174 @@ test("codex project 설치는 plugin 디렉터리와 marketplace.json을 만든�
   assert.match(result.stdout, /\[agent-plugins-installer\] install summary/);
 });
 
+test("codex project 설치는 stale direct marketplace entry가 있으면 local bundle 경로로 교체한다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const marketplacePath = path.join(projectDir, ".agents", "plugins", "marketplace.json");
+
+  await fs.mkdir(path.dirname(marketplacePath), { recursive: true });
+  await fs.writeFile(
+    marketplacePath,
+    `${JSON.stringify(
+      {
+        name: "agent-plugins-installer",
+        interface: {
+          displayName: "Agent Plugins Installer"
+        },
+        plugins: [
+          {
+            name: "github",
+            source: {
+              source: "local",
+              path: "./.generated/direct/codex/github"
+            },
+            policy: {
+              installation: "AVAILABLE",
+              authentication: "ON_INSTALL"
+            },
+            category: "Coding"
+          }
+        ]
+      },
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+
+  const result = runCli([
+    "install",
+    "codex",
+    "--scope",
+    "project",
+    "--cwd",
+    projectDir,
+    "--plugins",
+    "github"
+  ]);
+
+  assert.equal(result.status, 0);
+
+  const marketplace = await readJsonFile(marketplacePath);
+  assert.equal(
+    marketplace.plugins.find((plugin) => plugin.name === "github").source.path,
+    "./.codex/plugins/github"
+  );
+});
+
+test("codex project 설치는 동일한 generated direct bundle entry를 재사용한다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const marketplacePath = path.join(projectDir, ".agents", "plugins", "marketplace.json");
+  const directManifestPath = path.join(
+    projectDir,
+    ".generated",
+    "direct",
+    "codex",
+    "github",
+    ".codex-plugin",
+    "plugin.json"
+  );
+
+  await fs.mkdir(path.dirname(marketplacePath), { recursive: true });
+  await fs.mkdir(path.dirname(directManifestPath), { recursive: true });
+  await fs.copyFile(
+    path.join(REPO_ROOT, "plugins", "github", "targets", "codex", ".codex-plugin", "plugin.json"),
+    directManifestPath
+  );
+  await fs.writeFile(
+    marketplacePath,
+    `${JSON.stringify(
+      {
+        name: "agent-plugins-installer",
+        interface: {
+          displayName: "Agent Plugins Installer"
+        },
+        plugins: [
+          {
+            name: "github",
+            source: {
+              source: "local",
+              path: "./.generated/direct/codex/github"
+            },
+            policy: {
+              installation: "AVAILABLE",
+              authentication: "ON_INSTALL"
+            },
+            category: "Coding"
+          }
+        ]
+      },
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+
+  const result = runCli([
+    "install",
+    "codex",
+    "--scope",
+    "project",
+    "--cwd",
+    projectDir,
+    "--plugins",
+    "github"
+  ]);
+
+  assert.equal(result.status, 0);
+  assert.equal(
+    await pathExists(path.join(projectDir, ".codex", "plugins", "github", ".codex-plugin", "plugin.json")),
+    true
+  );
+
+  const marketplace = await readJsonFile(marketplacePath);
+  assert.equal(
+    marketplace.plugins.find((plugin) => plugin.name === "github").source.path,
+    "./.generated/direct/codex/github"
+  );
+});
+
+test("codex project 설치는 spring-thymeleaf-a11y plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+
+  const result = runCli([
+    "install",
+    "codex",
+    "--scope",
+    "project",
+    "--cwd",
+    projectDir,
+    "--plugins",
+    "spring-thymeleaf-a11y"
+  ]);
+
+  assert.equal(result.status, 0);
+  assert.equal(
+    await pathExists(
+      path.join(
+        projectDir,
+        ".codex",
+        "plugins",
+        "spring-thymeleaf-a11y",
+        ".codex-plugin",
+        "plugin.json"
+      )
+    ),
+    true
+  );
+
+  const marketplace = await readJsonFile(
+    path.join(projectDir, ".agents", "plugins", "marketplace.json")
+  );
+  assert.equal(
+    marketplace.plugins.some((plugin) => plugin.name === "spring-thymeleaf-a11y"),
+    true
+  );
+  assert.equal(
+    marketplace.plugins.find((plugin) => plugin.name === "spring-thymeleaf-a11y").source.path,
+    "./.codex/plugins/spring-thymeleaf-a11y"
+  );
+});
+
 test("install all --scope project 는 codex, claude, gemini를 함께 설치한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");
@@ -94,11 +262,21 @@ test("install all --scope project 는 codex, claude, gemini를 함께 설치한�
   );
   assert.equal(Object.hasOwn(geminiState.integrations, "github"), true);
   assert.equal(
-    await pathExists(path.join(homeDir, ".gemini", "extensions", "github", "gemini-extension.json")),
+    await pathExists(
+      path.join(projectDir, ".gemini", "extensions", "github", "gemini-extension.json")
+    ),
     true
   );
 
   const geminiLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.match(
+    geminiLog,
+    new RegExp(
+      `extensions install ${escapeForRegExp(
+        path.join(projectDir, ".gemini", "extensions", "github")
+      )} --consent`
+    )
+  );
   assert.match(geminiLog, /extensions enable github --scope workspace/);
 });
 
@@ -138,7 +316,7 @@ test("install all --scope project 는 superpowers 를 모든 타깃에 설치한
   );
   assert.equal(
     await pathExists(
-      path.join(homeDir, ".gemini", "extensions", "superpowers", "gemini-extension.json")
+      path.join(projectDir, ".gemini", "extensions", "superpowers", "gemini-extension.json")
     ),
     true
   );
@@ -150,6 +328,14 @@ test("install all --scope project 는 superpowers 를 모든 타깃에 설치한
   assert.equal(Object.hasOwn(geminiState.integrations, "superpowers"), true);
 
   const geminiLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.match(
+    geminiLog,
+    new RegExp(
+      `extensions install ${escapeForRegExp(
+        path.join(projectDir, ".gemini", "extensions", "superpowers")
+      )} --consent`
+    )
+  );
   assert.match(geminiLog, /extensions enable superpowers --scope workspace/);
 });
 
@@ -185,6 +371,50 @@ test("claude user 설치는 공식 plugin install 명령을 호출하고 state�
   assert.match(commandLog, /plugin marketplace add .*\.claude --scope user/);
   assert.match(commandLog, /plugin install github@agent-plugins-installer --scope user/);
   assert.match(commandLog, /plugin install vercel@agent-plugins-installer --scope user/);
+});
+
+test("claude 설치는 기존 marketplace가 있으면 update를 호출한다", async (t) => {
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t, {
+    claudeMarketplaceListJson: JSON.stringify([{ name: "agent-plugins-installer" }])
+  });
+
+  const result = runCli(
+    ["install", "claude", "--scope", "user", "--plugins", "github"],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
+
+  assert.equal(result.status, 0);
+
+  const commandLog = await fs.readFile(fake.claudeLog, "utf8");
+  assert.match(commandLog, /plugin marketplace update agent-plugins-installer/);
+});
+
+test("claude 설치는 기존 marketplace 경로가 다르면 remove 후 add를 호출한다", async (t) => {
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t, {
+    claudeMarketplaceListJson: JSON.stringify([
+      {
+        name: "agent-plugins-installer",
+        path: "/tmp/stale-marketplace/.claude"
+      }
+    ])
+  });
+
+  const result = runCli(
+    ["install", "claude", "--scope", "user", "--plugins", "github"],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
+
+  assert.equal(result.status, 0);
+
+  const commandLog = await fs.readFile(fake.claudeLog, "utf8");
+  assert.match(commandLog, /plugin marketplace remove agent-plugins-installer/);
+  assert.match(commandLog, /plugin marketplace add .*\.claude --scope user/);
 });
 
 test("claude 설치 실패는 요약을 유지하고 실제 외부 명령 오류를 노출한다", async (t) => {
@@ -235,7 +465,28 @@ test("gemini user 설치는 extensions install 명령을 호출하고 state를 �
   );
 });
 
-test("gemini project 설치는 홈 extension bundle 과 workspace 활성화를 만든다", async (t) => {
+test("gemini project 설치는 trust 입력과 skip-settings를 함께 전달한다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t, {
+    geminiRequireSkipSettings: true,
+    geminiRequireTrustInput: true
+  });
+
+  const result = runCli(
+    ["install", "gemini", "--scope", "project", "--cwd", projectDir, "--plugins", "github"],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
+
+  assert.equal(result.status, 0);
+
+  const commandLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.match(commandLog, /--skip-settings/);
+});
+
+test("gemini project 설치는 워크스페이스 .gemini 아래 extension bundle 과 workspace 활성화를 만든다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");
   const fake = await createFakeCommands(t);
@@ -249,7 +500,7 @@ test("gemini project 설치는 홈 extension bundle 과 workspace 활성화를 �
 
   assert.equal(result.status, 0);
   assert.equal(
-    await pathExists(path.join(homeDir, ".gemini", "extensions", "github", "gemini-extension.json")),
+    await pathExists(path.join(projectDir, ".gemini", "extensions", "github", "gemini-extension.json")),
     true
   );
 
@@ -257,14 +508,23 @@ test("gemini project 설치는 홈 extension bundle 과 workspace 활성화를 �
   assert.equal(Object.hasOwn(state.integrations, "github"), true);
 
   const commandLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.match(
+    commandLog,
+    new RegExp(
+      `extensions install ${escapeForRegExp(
+        path.join(projectDir, ".gemini", "extensions", "github")
+      )} --consent`
+    )
+  );
   assert.match(commandLog, /extensions enable github --scope workspace/);
-  assert.doesNotMatch(commandLog, /extensions install .*github.*--scope workspace/);
 });
 
 test("gemini project 설치는 기존 user bundle 이 있어도 충돌 없이 workspace 활성화를 수행한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");
-  const fake = await createFakeCommands(t);
+  const fake = await createFakeCommands(t, {
+    geminiInstalledExtensionNames: ["github"]
+  });
 
   let result = runCli(
     ["install", "gemini", "--scope", "user", "--plugins", "github"],
@@ -288,6 +548,14 @@ test("gemini project 설치는 기존 user bundle 이 있어도 충돌 없이 wo
   assert.equal(Object.hasOwn(state.integrations, "github"), true);
 
   const commandLog = await fs.readFile(fake.geminiLog, "utf8");
+  assert.doesNotMatch(
+    commandLog,
+    new RegExp(
+      `extensions install ${escapeForRegExp(
+        path.join(projectDir, ".gemini", "extensions", "github")
+      )} --consent`
+    )
+  );
   assert.match(commandLog, /extensions enable github --scope workspace/);
 });
 
@@ -316,7 +584,10 @@ async function createFakeCommands(
     claudeInstallStderr = "",
     geminiStdout = "",
     geminiStderr = "",
-    claudeMarketplaceListJson = "[]"
+    claudeMarketplaceListJson = "[]",
+    geminiRequireSkipSettings = false,
+    geminiRequireTrustInput = false,
+    geminiInstalledExtensionNames = []
   } = {}
 ) {
   const binDir = await createTempDir(t, "agent-plugins-bin-");
@@ -346,6 +617,38 @@ exit 0
     `#!/bin/sh
 set -eu
 printf '%s\\n' "$*" >> "${geminiLog}"
+if [ "$#" -ge 2 ] && [ "$1" = "extensions" ] && [ "$2" = "list" ]; then
+${geminiInstalledExtensionNames.map((name) => `  printf '%s\\n' '✓ ${name} (0.1.0)'`).join("\n")}
+  exit 0
+fi
+if [ "$#" -ge 2 ] && [ "$1" = "extensions" ] && [ "$2" = "install" ]; then
+  extension_name="$(basename "$3")"
+  case ",${geminiInstalledExtensionNames.join(",")}," in
+    *",$extension_name,"*)
+      printf '%s\\n' "Extension \"$extension_name\" is already installed. Please uninstall it first." >&2
+      exit 44
+      ;;
+  esac
+  if [ "${geminiRequireSkipSettings ? "1" : "0"}" = "1" ]; then
+    case " $* " in
+      *" --skip-settings "*) ;;
+      *)
+        printf '%s\\n' 'missing --skip-settings' >&2
+        exit 41
+        ;;
+    esac
+  fi
+  if [ "${geminiRequireTrustInput ? "1" : "0"}" = "1" ]; then
+    if ! IFS= read -r trust_answer; then
+      printf '%s\\n' 'missing trust input' >&2
+      exit 42
+    fi
+    if [ "$trust_answer" != "y" ]; then
+      printf '%s\\n' "unexpected trust input: $trust_answer" >&2
+      exit 43
+    fi
+  fi
+fi
 [ -z "${geminiStdout}" ] || printf '%s\\n' "${geminiStdout}"
 [ -z "${geminiStderr}" ] || printf '%s\\n' "${geminiStderr}" >&2
 exit ${geminiExitCode}

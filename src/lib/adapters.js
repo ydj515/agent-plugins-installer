@@ -13,7 +13,7 @@ import {
   toRelativeMarketplacePath
 } from "./utils.js";
 
-const IGNORED_SOURCE_NAMES = new Set([".DS_Store", "targets"]);
+const IGNORED_SOURCE_NAMES = new Set([".DS_Store", "targets", "node_modules"]);
 
 export function getTargetAdapter(target) {
   if (!TARGETS.includes(target)) {
@@ -62,6 +62,12 @@ export function getTargetAdapter(target) {
     getClaudeMarketplaceAddArgs(marketplaceRoot, scope) {
       return ["plugin", "marketplace", "add", marketplaceRoot, "--scope", scope];
     },
+    getClaudeMarketplaceUpdateArgs(name) {
+      return ["plugin", "marketplace", "update", name];
+    },
+    getClaudeMarketplaceRemoveArgs(name) {
+      return ["plugin", "marketplace", "remove", name];
+    },
     getClaudeInstallArgs(integration, scope) {
       return ["plugin", "install", `${integration.id}@${CLAUDE_MARKETPLACE_NAME}`, "--scope", scope];
     },
@@ -69,7 +75,7 @@ export function getTargetAdapter(target) {
       return ["plugin", "uninstall", `${integration.id}@${CLAUDE_MARKETPLACE_NAME}`, "--scope", scope];
     },
     getGeminiInstallArgs(bundlePath) {
-      return ["extensions", "install", bundlePath, "--consent"];
+      return ["extensions", "install", bundlePath, "--consent", "--skip-settings"];
     },
     getGeminiUninstallArgs(integration) {
       return ["extensions", "uninstall", integration.id];
@@ -124,7 +130,9 @@ function resolveInstallRootForTarget(target, scope, cwd, homeDir) {
         ? path.join(cwd, ".claude", "plugins")
         : path.join(homeDir, ".claude", "plugins");
     case "gemini":
-      return path.join(homeDir, ".gemini", "extensions");
+      return scope === "project"
+        ? path.join(cwd, ".gemini", "extensions")
+        : path.join(homeDir, ".gemini", "extensions");
     default:
       throw usageError(`Unsupported target "${target}".`);
   }

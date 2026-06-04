@@ -14,6 +14,7 @@ The bundled catalog currently includes these integrations:
 - `vercel`
 - `superpowers`
 - `mise-workflows`
+- `spring-thymeleaf-a11y`
 
 Supported targets:
 
@@ -64,6 +65,7 @@ npx agent-plugins-installer install codex --scope project --plugins github
 npx agent-plugins-installer install claude --scope user --plugins github,vercel
 npx agent-plugins-installer install gemini --scope user --plugins vercel
 npx agent-plugins-installer install codex --scope project --plugins mise-workflows
+npx agent-plugins-installer install codex --scope project --plugins spring-thymeleaf-a11y
 ```
 
 List installed and available integrations:
@@ -105,9 +107,8 @@ npx agent-plugins-installer update codex --scope project --plugins github
 - Gemini uses extensions, not plugins.
 - For direct repo-based extension validation, use the generated bundles under `.generated/direct/gemini/<plugin-id>`.
 - In `user` scope, copies the shared integration source into `~/.gemini/extensions/<extension-id>` and runs `gemini extensions install <local-extension-path> --consent`.
-- In `project` scope, also copies the shared integration source into `~/.gemini/extensions/<extension-id>`, then runs `gemini extensions enable <name> --scope workspace` for the current workspace.
-- In `project` scope, the installed extension bundle is still visible under `~/.gemini/extensions/<extension-id>`, not under `<cwd>/.gemini`.
-- `<cwd>/.gemini` is used for workspace-level state, not as the primary extension bundle location.
+- In `project` scope, copies the shared integration source into `<cwd>/.gemini/extensions/<extension-id>`, then runs `gemini extensions enable <name> --scope workspace` for the current workspace.
+- In `project` scope, the installed extension bundle is visible under `<cwd>/.gemini/extensions/<extension-id>`.
 - Records install state in `~/.gemini/.agent-plugins-installer-state.json` for `user` scope and `<cwd>/.gemini/.agent-plugins-installer-state.json` for `project` scope.
 
 ## Development

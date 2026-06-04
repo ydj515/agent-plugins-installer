@@ -44,6 +44,17 @@
       "enabledByDefault": true,
       "tags": ["mise", "workflow", "tooling", "review"],
       "groups": ["coding", "workflow"]
+    },
+    {
+      "id": "spring-thymeleaf-a11y",
+      "title": "Spring Thymeleaf A11y",
+      "description": "Shared accessibility audit and safe-fix workflow bundle for Spring Boot and Thymeleaf applications across Codex, Claude Code, and Gemini CLI.",
+      "version": "0.1.0",
+      "sourceDir": "plugins/spring-thymeleaf-a11y",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["spring", "thymeleaf", "a11y", "accessibility"],
+      "groups": ["coding", "quality"]
     }
   ]
 }
