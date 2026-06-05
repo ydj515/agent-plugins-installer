@@ -48,7 +48,7 @@
     {
       "id": "web-a11y",
       "title": "Web A11y",
-      "description": "Shared Playwright-based accessibility audit reporting bundle for React, Next.js, Spring/Thymeleaf, and other web application URLs across Codex, Claude Code, and Gemini CLI.",
+      "description": "Shared Playwright-based accessibility audit and remediation bundle for React, Next.js, Spring/Thymeleaf, and other web application URLs across Codex, Claude Code, and Gemini CLI.",
       "version": "0.1.0",
       "sourceDir": "plugins/web-a11y",
       "targets": ["codex", "claude", "gemini"],

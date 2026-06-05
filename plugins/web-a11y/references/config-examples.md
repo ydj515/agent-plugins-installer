@@ -46,9 +46,9 @@ The audit command writes both JSON and Markdown reports.
 If `node_modules/` is missing, read `runtime-strategy.md` before installing dependencies. Prefer
 `npm ci --ignore-scripts --prefer-offline --no-audit --no-fund` over `npm install`.
 
-## 경로 원칙
+## Path Principles
 
-- `outputDir`는 config 파일 기준 상대 경로로 해석한다.
-- `--output-dir` 또는 `--output`는 URL 직접 실행 시 현재 작업 디렉터리 기준 상대 경로로 해석한다.
-- 페이지 `url`이 상대 경로면 `baseUrl`이 필요하다.
-- 인증이 필요한 플로우는 추후 확장 시 storage state나 사전 로그인 스텝을 추가한다.
+- `outputDir` is resolved relative to the config file.
+- `--output-dir` or `--output` is resolved relative to the current working directory when running directly with URL input.
+- If a page `url` is relative, `baseUrl` is required.
+- For flows that require authentication, add storage state or a pre-login step when extending the runner.

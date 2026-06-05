@@ -1,0 +1,4 @@
+interface:
+  display_name: "A11y Fix Guide"
+  short_description: "Fix axe accessibility report findings safely."
+  default_prompt: "Use $a11y-fix-guide to fix actionable axe accessibility report findings, asking before color-contrast changes."

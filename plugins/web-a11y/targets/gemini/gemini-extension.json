@@ -1,6 +1,6 @@
 {
   "name": "web-a11y",
   "version": "0.1.0",
-  "description": "Playwright-based accessibility audit reports for React, Next.js, Thymeleaf, and other web application URLs.",
+  "description": "Playwright-based accessibility audit reports and axe remediation workflows for React, Next.js, Thymeleaf, and other web application URLs.",
   "contextFileName": "GEMINI.md"
 }

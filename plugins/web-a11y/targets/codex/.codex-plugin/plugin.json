@@ -1,7 +1,7 @@
 {
   "name": "web-a11y",
   "version": "0.1.0",
-  "description": "Playwright-based accessibility audit reports for web application URLs across React, Next.js, Spring/Thymeleaf, and static HTML.",
+  "description": "Playwright-based accessibility audit reports and axe remediation workflows for web application URLs across React, Next.js, Spring/Thymeleaf, and static HTML.",
   "author": {
     "name": "Dongjin"
   },
@@ -17,8 +17,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Web A11y",
-    "shortDescription": "Audit web URLs and produce accessibility reports",
-    "longDescription": "Run Playwright and axe-core accessibility audits against rendered web URLs and produce JSON plus Markdown reports with violations, incomplete review items, selectors, and impact metadata.",
+    "shortDescription": "Audit web URLs and fix axe findings",
+    "longDescription": "Run Playwright and axe-core accessibility audits against rendered web URLs, produce JSON plus Markdown reports, and guide focused remediation of actionable findings while requiring confirmation before color-contrast changes.",
     "developerName": "Dongjin",
     "category": "Coding",
     "capabilities": [
@@ -30,7 +30,8 @@
     "defaultPrompt": [
       "Run an accessibility audit for this URL.",
       "Audit these web pages and write JSON and Markdown reports.",
-      "Summarize the latest Playwright accessibility audit report."
+      "Summarize the latest Playwright accessibility audit report.",
+      "Fix actionable axe findings from this accessibility report."
     ]
   }
 }
