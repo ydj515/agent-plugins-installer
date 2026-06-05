@@ -123,6 +123,11 @@ export async function runCommand(command, args, { cwd, env, stdinText } = {}) {
       stderr += chunk.toString();
     });
 
+    child.stdin.on("error", () => {
+      // 자식 프로세스가 선택적 stdin을 읽기 전에 종료될 수 있다.
+      // 명령 결과는 종료 코드로 판단하므로 닫힌 stdin 파이프로 CLI가 죽지 않게 한다.
+    });
+
     if (typeof stdinText === "string" && stdinText.length > 0) {
       child.stdin.write(stdinText);
     }
