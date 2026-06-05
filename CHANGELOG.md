@@ -23,6 +23,7 @@ This changelog is based on the versioned states visible in this repository's git
 - updated `web-a11y` guidance to treat axe selectors as rendered DOM locations while mapping them back to source code before editing
 - documented that `color-contrast` findings must be summarized and approved by the user before any color token, CSS variable, theme value, overlay, gradient, or component color prop is changed
 - translated the `config-examples.md` path principles section into English
+- updated the full npm test suite to run with Node's test runner concurrency set to `1` so generated direct bundles are not read while another test file is exercising CLI install flows
 
 ## [0.1.7]
 

@@ -20,7 +20,7 @@
   "scripts": {
     "start": "node ./src/cli.js",
     "sync:direct-bundles": "node ./scripts/sync-direct-bundles.mjs",
-    "test": "npm run sync:direct-bundles && node --test",
+    "test": "npm run sync:direct-bundles && node --test --test-concurrency=1",
     "test:real-cli": "npm run sync:direct-bundles && node --test test/real-cli-e2e.test.js",
     "test:node20": "mise run test-node20",
     "test:node22": "mise run test-node22",
