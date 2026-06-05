@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.8]
+
+### Highlights
+
+- added a `web-a11y` remediation skill for fixing actionable axe accessibility report findings
+- added a color-contrast safety gate that requires explicit user confirmation before changing contrast-related styles
+- clarified `web-a11y` configuration path behavior in English
+
+### Added
+
+- `a11y-fix-guide` skill for applying focused fixes from Playwright/axe-core JSON or Markdown audit reports
+- axe remediation reference patterns for common findings such as `button-name`, `link-name`, `select-name`, `page-has-heading-one`, `landmark-one-main`, `region`, `bypass`, labels, ARIA, keyboard, focus, and table issues
+- Codex, Claude, and Gemini plugin metadata updates that describe the `web-a11y` bundle as both an audit and remediation workflow
+
+### Changed
+
+- updated `web-a11y` guidance to treat axe selectors as rendered DOM locations while mapping them back to source code before editing
+- documented that `color-contrast` findings must be summarized and approved by the user before any color token, CSS variable, theme value, overlay, gradient, or component color prop is changed
+- translated the `config-examples.md` path principles section into English
+
 ## [0.1.7]
 
 ### Highlights
