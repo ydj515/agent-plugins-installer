@@ -50,9 +50,16 @@ jobs:
         run: |
           PROJECT_DIR="${RUNNER_TEMP}/agent-plugins-installer-smoke-${{ matrix.node-version }}"
           CACHE_DIR="${RUNNER_TEMP}/agent-plugins-installer-npm-cache-${{ matrix.node-version }}"
-          mkdir -p "$PROJECT_DIR" "$CACHE_DIR"
+          BIN_DIR="${RUNNER_TEMP}/agent-plugins-installer-bin-${{ matrix.node-version }}"
+          mkdir -p "$PROJECT_DIR" "$CACHE_DIR" "$BIN_DIR"
+          cat > "$BIN_DIR/codex" <<'SH'
+          #!/bin/sh
+          set -eu
+          exit 0
+          SH
+          chmod +x "$BIN_DIR/codex"
 
-          NPM_CONFIG_CACHE="$CACHE_DIR" npx --yes --package "./${{ steps.pack.outputs.tarball }}" agent-plugins-installer install codex --scope project --cwd "$PROJECT_DIR" --plugins github
+          PATH="$BIN_DIR:$PATH" NPM_CONFIG_CACHE="$CACHE_DIR" npx --yes --package "./${{ steps.pack.outputs.tarball }}" agent-plugins-installer install codex --scope project --cwd "$PROJECT_DIR" --plugins github
 
           test -f "$PROJECT_DIR/.codex/plugins/github/.codex-plugin/plugin.json"
           test -f "$PROJECT_DIR/.agents/plugins/marketplace.json"

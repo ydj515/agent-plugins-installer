@@ -25,6 +25,7 @@ This changelog is based on the versioned states visible in this repository's git
 - translated the `config-examples.md` path principles section into English
 - updated the full npm test suite to run with Node's test runner concurrency set to `1` so generated direct bundles are not read while another test file is exercising CLI install flows
 - handled closed stdin pipes in `runCommand` so commands that accept optional stdin but exit early are still judged by their process exit code
+- updated CI and release tarball smoke tests to use a temporary `codex` shim so package verification does not require the Codex CLI on GitHub-hosted runners
 
 ## [0.1.7]
 
