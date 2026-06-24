@@ -27,7 +27,6 @@
 - 이 저장소는 현재 구현보다 원본 plugin 자산과 참고 문서가 먼저 들어 있는 상태다.
 - 현재 번들로 확보된 Codex plugin 원본은 `github`, `vercel` 두 개다.
 - npm 패키지로 배포해 사용자가 저장소를 직접 clone 하지 않고도 설치할 수 있어야 한다.
-- `/Users/dongjin/dev/study/agent-skills-installer`와 비슷한 사용성을 가져가야 한다.
 - 사용자 관점에서 “어떤 agent를 쓰든 비슷한 명령으로 plugin을 설치”하는 경험이 중요하다.
 - 하지만 실제 설치 메커니즘은 agent별로 다르다.
   - Codex는 로컬 marketplace와 plugin directory 기반이다.
