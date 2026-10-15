@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.9]
+
+### Highlights
+
+- added an `architecture-diagram` plugin for standalone HTML architecture diagrams and resource allocation plans
+- refreshed `mise-workflows` against the mise 2026.10 documentation and added `mise-lock` and `mise-ci` skills
+- translated the `architecture-diagram` and `mise-workflows` skill content to English
+
+### Added
+
+- `architecture-diagram` plugin with Codex, Claude, and Gemini target manifests and repo marketplace entries
+- `mise-lock` and `mise-ci` skills in `mise-workflows`, with lockfile, CI integration, and secrets references
+- a task definition rule that requires `description`, `usage` with `about`, and `run` for every mise task
+- a tool execution rule that avoids `mise exec` when a task uses the `[tools]` version
+- validator rules for deprecated mise syntax, the task definition rule, npm-style version ranges, and lockfile settings
+- regression tests for the `architecture-diagram` install flow and the `mise-workflows` validator and starter examples
+
+### Changed
+
+- bumped `mise-workflows` to `0.2.0` and updated its Codex, Claude, and Gemini metadata for eight skills
+- updated `mise-workflows` guidance for backend priority, version request syntax, `minimum_release_age`, Tera v2 templates, `python.uv_venv_auto`, monorepo `//path:task` names, task `skip_if`, `timeout`, and `sources`/`outputs`
+- updated starter profile examples to Python `3.14`, uv `0.13`, Java `zulu-25`, and Gradle `9.8`
+- renamed skill-local `mise-workflows` checklists so they no longer collide with shared reference file names
+- pinned the repository's mise Node version to `24.19.0` and aligned the repository's own mise tasks with the task rules
+- removed an absolute path from `docs/IMPLEMENTATION_PLAN.md`
+
+### Fixed
+
+- fixed invalid TOML and `usage` syntax in `mise-workflows` examples (unquoted task names with `:` and `choices=[...]`)
+- fixed relative reference paths in skill-local `mise-workflows` checklists
+
 ## [0.1.8]
 
 ### Highlights
