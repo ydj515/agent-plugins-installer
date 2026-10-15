@@ -1,32 +1,53 @@
 [tools]
-node = "24"
+node = "24.19.0"
 
 [tasks.default]
-depends = ["start"]
 description = "Run start task"
+usage = '''
+about "mise run default: run the CLI locally (same as mise run start)"
+'''
+run = [{ task = "start" }]
 
 [tasks.start]
 description = "Run the CLI locally with the default mise Node version"
-run = "mise exec node@24 -- node src/cli.js"
+usage = '''
+about "mise run start: run the CLI locally with Node 24"
+'''
+run = "node src/cli.js"
 
 [tasks.test]
 description = "Run the automated test suite with the default mise Node version"
-run = "mise exec node@24 -- npm test"
+usage = '''
+about "mise run test: run the automated test suite with Node 24"
+'''
+run = "npm test"
 
 [tasks.test-node20]
 description = "Run the automated test suite on Node 20"
+usage = '''
+about "mise run test-node20: run the automated test suite on Node 20"
+'''
 run = "mise exec node@20 -- npm test"
 
 [tasks.test-node22]
 description = "Run the automated test suite on Node 22"
+usage = '''
+about "mise run test-node22: run the automated test suite on Node 22"
+'''
 run = "mise exec node@22 -- npm test"
 
 [tasks.test-node24]
 description = "Run the automated test suite on Node 24"
-run = "mise exec node@24 -- npm test"
+usage = '''
+about "mise run test-node24: run the automated test suite on Node 24"
+'''
+run = "npm test"
 
 [tasks.test-matrix]
 description = "Run the automated test suite on every supported CI Node version"
+usage = '''
+about "mise run test-matrix: run the test suite on Node 20, 22, and 24 in sequence"
+'''
 run = """
 mise run test-node20
 mise run test-node22
@@ -35,10 +56,16 @@ mise run test-node24
 
 [tasks.pack]
 description = "Dry-run the publishable npm tarball"
-run = "mise exec node@24 -- npm pack --dry-run"
+usage = '''
+about "mise run pack: dry-run the publishable npm tarball"
+'''
+run = "npm pack --dry-run"
 
 [tasks.smoke]
 description = "Pack the tarball and smoke-test installation through npx"
+usage = '''
+about "mise run smoke: pack the tarball and smoke-test installation through npx"
+'''
 run = """
 set -eu
 PACK_DIR=\"$(mktemp -d \"${TMPDIR:-/tmp}/api-pack.XXXXXX\")\"
@@ -56,14 +83,17 @@ set -eu
 exit 0
 SH
 chmod +x \"$BIN_DIR/codex\"
-TARBALL=\"$(mise exec node@24 -- npm pack --silent --pack-destination \"$PACK_DIR\")\"
-mise exec node@24 -- env HOME=\"$HOME_DIR\" PATH=\"$BIN_DIR:$PATH\" NPM_CONFIG_CACHE=\"$CACHE_DIR\" npx --yes --package \"$PACK_DIR/$TARBALL\" agent-plugins-installer install codex --scope workspace --cwd \"$PROJECT_DIR\" --plugins github
+TARBALL=\"$(npm pack --silent --pack-destination \"$PACK_DIR\")\"
+env HOME=\"$HOME_DIR\" PATH=\"$BIN_DIR:$PATH\" NPM_CONFIG_CACHE=\"$CACHE_DIR\" npx --yes --package \"$PACK_DIR/$TARBALL\" agent-plugins-installer install codex --scope workspace --cwd \"$PROJECT_DIR\" --plugins github
 test -f \"$PROJECT_DIR/.codex/plugins/github/.codex-plugin/plugin.json\"
 test -f \"$PROJECT_DIR/.agents/plugins/marketplace.json\"
 """
 
 [tasks.verify]
 description = "Run the default local verification flow"
+usage = '''
+about "mise run verify: run test, pack, and smoke in sequence"
+'''
 run = """
 mise run test
 mise run pack
