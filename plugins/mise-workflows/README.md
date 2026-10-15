@@ -5,10 +5,10 @@
 ## 포함 내용
 
 - `skills/`
-  - core skills only: `mise-tools`, `mise-env`, `mise-tasks`, `mise-policy`, `mise-profiles`, `mise-review`
+  - core skills only: `mise-tools`, `mise-env`, `mise-tasks`, `mise-policy`, `mise-profiles`, `mise-review`, `mise-lock`, `mise-ci`
 - `references/`
   - 공통 canonical reference
-  - policy, profile, env/task patterns, ecosystem-specific guidance, example `mise.toml`
+  - policy, profile, env/task patterns, lockfile, CI, secrets, ecosystem-specific guidance, example `mise.toml`
 - `scripts/validate_mise_toml.py`
   - JSON / text 출력을 지원하는 `mise-review` validator
 - `targets/`
@@ -23,12 +23,14 @@
 - profile은 라우터이고, 언어/build/package manager 규칙 저장소가 아니다.
 - tracked `mise.toml`에는 selector를, exact resolution은 `mise.lock`에 둔다.
 - 버전 후보는 `mise ls-remote` 또는 `mise latest`로 실제 해석 가능성을 확인한다.
+- 모든 task는 `description`, `usage`(`about` 포함), `run`을 지정한다.
+- 문서 기준 버전: mise 2026.10.x (2026-10-16 확인)
 
 ## 구조 도식
 
 ```mermaid
 flowchart TD
-    A["plugin root"] --> B["core skills (6)"]
+    A["plugin root"] --> B["core skills (8)"]
     A --> C["ecosystem references"]
     A --> D["profile examples"]
     A --> E["validator script"]
@@ -40,6 +42,8 @@ flowchart TD
     B --> B4["mise-policy"]
     B --> B5["mise-profiles"]
     B --> B6["mise-review"]
+    B --> B7["mise-lock"]
+    B --> B8["mise-ci"]
 
     C --> C1["java-runtime"]
     C --> C2["java-gradle"]

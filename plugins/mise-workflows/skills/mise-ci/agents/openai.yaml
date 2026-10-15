@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise CI"
+  short_description: "Wire mise into CI and container builds."
+  default_prompt: "Use $mise-ci to install mise tools in CI with a locked, cache-safe workflow."

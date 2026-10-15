@@ -16,6 +16,8 @@ Load these from the plugin root when the task matches:
 - `../../skills/mise-policy`
 - `../../skills/mise-profiles`
 - `../../skills/mise-review`
+- `../../skills/mise-lock`
+- `../../skills/mise-ci`
 
 ### Ecosystem references
 
@@ -26,6 +28,12 @@ Load these when the repository needs ecosystem-specific selector or workflow gui
 - `../../references/ecosystems/python-runtime.md`
 - `../../references/ecosystems/python-uv.md`
 - `../../references/ecosystems/spring-service.md`
+
+### Lockfile, CI, and secrets
+
+- `../../references/lockfile.md`
+- `../../references/ci-integration.md`
+- `../../references/secrets.md`
 
 ### Profile documents
 
@@ -55,11 +63,14 @@ Load these when the repository needs ecosystem-specific selector or workflow gui
 - Start with `mise-tools`, `mise-env`, or `mise-tasks` depending on the user request.
 - Read `version-policy.md` before finalizing selectors.
 - Load the matching ecosystem reference only when runtime, build, package-manager, or framework rules matter.
+- Give every task a `description`, a `usage` spec that starts with `about "mise run <task>: ..."`, and a `run` command.
+- Use `mise-lock` for `mise.lock` and `mise-ci` for CI install and cache flow.
 
 ### 3. Review and diagnostics
 
 - Use `mise-review` for structured review.
 - Run `../../scripts/validate_mise_toml.py` instead of inventing ad-hoc rule output.
+- Also run `mise tasks validate` when mise is installed and the config is trusted.
 - Use `../../references/rules.md` to interpret rule families and owner boundaries.
 
 ## Scope Notes
@@ -75,3 +86,5 @@ Load these when the repository needs ecosystem-specific selector or workflow gui
 - Choose a starter profile for this project.
 - Refactor our `[tools]`, `[env]`, or `[tasks]` setup.
 - Explain how Python/uv or Java/Gradle policy should be represented in `mise`.
+- Add `mise.lock` and a locked CI install.
+- Find deprecated mise syntax before it is removed.

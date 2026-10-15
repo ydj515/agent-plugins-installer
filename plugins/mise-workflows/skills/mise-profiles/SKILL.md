@@ -25,8 +25,8 @@ Do not use this skill to define vendor syntax, build selector details, or valida
 2. Read `../../references/profile-composition.md`.
 3. Read `../../references/profile-examples.md` when you need a concrete starting `mise.toml`.
 4. Read `../../references/hub-spoke-architecture.md` if the repository is a monorepo.
-5. Read `references/profile-catalog.md` for quick local lookup.
-6. Read `references/profile-composition.md` before changing skill routing.
+5. Read `references/profile-catalog-shortcut.md` for quick local lookup.
+6. Read `references/profile-composition-shortcut.md` before changing skill routing.
 
 ## Workflow
 

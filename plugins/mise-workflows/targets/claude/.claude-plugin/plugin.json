@@ -6,16 +6,18 @@
   },
   "metadata": {
     "description": "Mise Workflows core skills for authoring and reviewing mise configuration workflows in Claude Code.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "mise-workflows-core",
-      "description": "Core workflow skills for tools, env, tasks, policy, profiles, and review, backed by root ecosystem references and starter profile examples.",
+      "description": "Core workflow skills for tools, env, tasks, policy, profiles, review, lockfiles, and CI, backed by root ecosystem references and starter profile examples.",
       "source": "../../",
       "strict": false,
       "skills": [
+        "../../skills/mise-ci",
         "../../skills/mise-env",
+        "../../skills/mise-lock",
         "../../skills/mise-policy",
         "../../skills/mise-profiles",
         "../../skills/mise-review",

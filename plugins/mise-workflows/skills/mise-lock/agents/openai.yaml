@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mise Lock"
+  short_description: "Create and maintain mise.lock lockfiles."
+  default_prompt: "Use $mise-lock to set up or review mise.lock for reproducible tool installs."

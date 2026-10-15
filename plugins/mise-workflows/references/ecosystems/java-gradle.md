@@ -9,14 +9,23 @@
 ## 기본 원칙
 
 - Gradle selector floor는 shared policy와 profile 맥락 안에서 판단한다.
-- wrapper가 프로젝트 실행 진입점이어도, 개발 환경 정렬을 위해 `mise` 관리 Gradle이 필요할 수 있다.
+- 프로젝트 build 진입점은 Gradle wrapper(`gradlew`)다. wrapper가 정한 Gradle 버전이 실제 build 버전이다.
+- `mise`의 `gradle`은 wrapper 생성·갱신(`gradle wrapper`)과 개발 환경 정렬용이다. 두 버전이 크게 어긋나지 않게 맞춘다.
 - runtime selector와 build selector를 같은 규칙으로 뭉뚱그리지 않는다.
+- registry의 `gradle`은 `aqua:gradle/gradle-distributions` backend를 쓴다.
+
+## 기본 정책
+
+- 신규 프로젝트 추천 selector: `9.8` (Gradle 9 계열)
+- 기존 Gradle 8 프로젝트: `8.14`를 유지하고 Gradle 9 migration 항목을 확인한 뒤 올린다
+- Gradle 9는 Gradle 자체를 JVM 17 이상에서 실행한다. Java runtime selector와 함께 확인한다
+- 2026-10-16 기준 후보: `mise latest gradle@9` → `9.8.1`, `mise latest gradle@8` → `8.14.6`
 
 ## 점검 질문
 
 - profile이 실제로 Gradle을 요구하는가
 - selector가 현재 지원 floor보다 낮지 않은가
-- wrapper와 `mise`의 책임 경계가 문서화되어 있는가
+- wrapper(`gradle/wrapper/gradle-wrapper.properties`)의 버전과 `mise.toml` selector가 같은 major인가
 - Java runtime 규칙은 `references/ecosystems/java-runtime.md`와 함께 봤는가
 
 ## 조합 원칙

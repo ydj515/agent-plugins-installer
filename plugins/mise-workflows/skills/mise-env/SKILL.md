@@ -1,6 +1,6 @@
 ---
 name: mise-env
-description: Design, review, or refactor a project's mise `[env]` configuration, local overrides, and secret-handling rules. Use when Codex needs to create or update environment variables in `mise.toml`, move deprecated env patterns to `env._.*`, or verify local config and `.gitignore` behavior.
+description: Design, review, or refactor a project's mise `[env]` configuration, local overrides, secrets, and template usage. Use when Codex needs to create or update environment variables in `mise.toml`, migrate deprecated env syntax (`env_file`, `env.mise.*`, Tera v1 helpers, `python.uv_venv_auto = true`), choose a secrets approach, or verify local config and `.gitignore` behavior.
 ---
 
 # Mise Env
@@ -12,10 +12,11 @@ Use this skill to design or review the shared `[env]` layer of a `mise` configur
 Use it when you need to:
 
 - treat `[env]` as the single source of truth for non-secret project config
-- migrate deprecated env patterns to `env._.*`
-- separate tracked env from local-only overrides
-- decide how `required`, `redact`, `file`, `source`, and `path` should behave
-- set up Python venv auto-creation or workspace-aware env loading
+- migrate deprecated env syntax to `env._.*` directives and Tera v2 templates
+- separate tracked env from local-only overrides and config environments (`MISE_ENV`)
+- decide how `required`, `default`, `redact`, `tools`, `_.file`, `_.source`, and `_.path` should behave
+- choose between `mise.local.toml`, SOPS, age, and fnox task secrets
+- pick one Python venv mechanism (`_.python.venv` or `python.uv_venv_auto`)
 - verify `.gitignore` and local config handling
 
 Do not use this skill for tool selection, task composition, or runtime-specific vendor rules.
@@ -25,23 +26,26 @@ Do not use this skill for tool selection, task composition, or runtime-specific 
 1. Read `../../references/env-core.md`.
 2. Read `../../references/policy-core.md`.
 3. Read `../../references/env-patterns.md` for directive, template, and venv patterns.
-4. Read `references/env-core.md` for the local execution checklist.
-5. Read `references/anti-patterns.md` before editing tracked local config behavior.
-6. If the repository is a monorepo, read `../../references/hub-spoke-architecture.md`.
-7. If multi-account GitHub auth is involved, read `../../references/github-tokens.md`.
+4. Read `references/env-checklist.md` for the local execution checklist.
+5. Read `references/env-anti-patterns.md` before editing tracked local config behavior.
+6. If secrets are involved, read `../../references/secrets.md`.
+7. If the repository is a monorepo, read `../../references/hub-spoke-architecture.md`.
+8. If multi-account GitHub auth or mise's own GitHub token is involved, read `../../references/github-tokens.md`.
 
 ## Workflow
 
-1. Inspect `mise.toml`, `mise.local.toml`, and `.gitignore`.
-2. Normalize deprecated top-level env keys into `env._.*` patterns.
-3. Decide whether scripts still need fallback defaults to work without `mise`.
-4. Keep secret exposure and local override behavior aligned with shared policy.
-5. Hand off repeatable multi-step workflow design to `mise-tasks`.
-6. Delegate runtime-specific env interpretation to sibling ecosystem skills only when necessary.
+1. Inspect `mise.toml`, `mise.local.toml`, `mise.<env>.toml`, and `.gitignore`.
+2. Normalize deprecated env syntax into `env._.*` directives and move `redactions` to the top level.
+3. Replace Tera v1 helpers and guard undefined variables with `default`.
+4. Decide whether scripts still need fallback defaults to work without `mise`.
+5. Keep secret exposure and local override behavior aligned with shared policy.
+6. Hand off repeatable multi-step workflow design to `mise-tasks`.
+7. Delegate runtime-specific env interpretation to ecosystem references only when necessary.
 
 ## Example Requests
 
 - "이 저장소의 `[env]` 구성을 정리해줘."
 - "local config가 추적되지 않게 만들고 싶어."
-- "deprecated env 패턴이 있는지 찾아줘."
-- "Python `.venv`를 `mise` 기준으로 자동 생성하게 해줘."
+- "deprecated env 패턴이나 Tera v1 문법이 있는지 찾아줘."
+- "uv 프로젝트에서 `.venv`를 `mise` 기준으로 자동 활성화하게 해줘."
+- "secret을 SOPS로 관리할지 fnox로 관리할지 골라줘."
