@@ -9,7 +9,7 @@ import { readJsonFile, removePath } from "../src/lib/utils.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 const CODEX_MARKETPLACE = "agent-plugins-installer";
-const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows", "web-a11y"];
+const INTEGRATION_IDS = ["vercel", "superpowers", "mise-workflows", "web-a11y", "architecture-diagram"];
 
 test("codex real CLI 는 installer 가 workspace codex bundles 를 설치할 수 있다", async (t) => {
   if (!hasCommand("codex")) {

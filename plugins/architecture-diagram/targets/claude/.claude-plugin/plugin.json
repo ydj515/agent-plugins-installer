@@ -1,0 +1,9 @@
+{
+  "name": "architecture-diagram",
+  "description": "Standalone HTML architecture diagrams with card layouts, SVG connectors, and resource allocation tables built from spreadsheets, images, or text requirements in Claude Code.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Dongjin"
+  },
+  "license": "UNLICENSED"
+}

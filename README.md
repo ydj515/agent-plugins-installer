@@ -15,6 +15,7 @@ The bundled catalog currently includes these integrations:
 - `superpowers`
 - `mise-workflows`
 - `web-a11y`
+- `architecture-diagram`
 
 Supported targets:
 
@@ -66,6 +67,7 @@ npx agent-plugins-installer install claude --scope user --plugins github,vercel
 npx agent-plugins-installer install gemini --scope user --plugins vercel
 npx agent-plugins-installer install codex --scope workspace --plugins mise-workflows
 npx agent-plugins-installer install codex --scope workspace --plugins web-a11y
+npx agent-plugins-installer install claude --scope user --plugins architecture-diagram
 ```
 
 List installed and available integrations:

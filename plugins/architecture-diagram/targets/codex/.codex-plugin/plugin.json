@@ -1,0 +1,36 @@
+{
+  "name": "architecture-diagram",
+  "version": "0.1.0",
+  "description": "Standalone HTML architecture diagrams with card layouts, SVG connectors, and resource allocation tables built from spreadsheets, images, or text requirements.",
+  "author": {
+    "name": "Dongjin"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "architecture",
+    "diagram",
+    "html",
+    "svg",
+    "infrastructure",
+    "resource-allocation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Architecture Diagram",
+    "shortDescription": "Turn spreadsheets and images into HTML architecture diagrams",
+    "longDescription": "Read resource spreadsheets, architecture photos or screenshots, and text requirements, then produce a single standalone HTML file with card-based network and environment zones, SVG connectors, and role-based resource allocation tables with capacity totals.",
+    "developerName": "Dongjin",
+    "category": "Coding",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "brandColor": "#1D4ED8",
+    "defaultPrompt": [
+      "Build an HTML architecture diagram and resource allocation plan from this spreadsheet.",
+      "Redraw this architecture screenshot as HTML cards with SVG connectors.",
+      "Update the resource allocation table in this architecture diagram HTML."
+    ]
+  }
+}

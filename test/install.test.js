@@ -251,6 +251,58 @@ test("codex workspace 설치는 web-a11y plugin 디렉터리와 marketplace entr
   assert.match(commandLog, /plugin add web-a11y@agent-plugins-installer/);
 });
 
+test("codex workspace 설치는 architecture-diagram plugin 디렉터리와 marketplace entry를 만든다", async (t) => {
+  const projectDir = await createTempDir(t, "agent-plugins-project-");
+  const homeDir = await createTempDir(t, "agent-plugins-home-");
+  const fake = await createFakeCommands(t);
+
+  const result = runCli(
+    [
+      "install",
+      "codex",
+      "--scope",
+      "workspace",
+      "--cwd",
+      projectDir,
+      "--plugins",
+      "architecture-diagram"
+    ],
+    {
+      env: buildEnv({ homeDir, fakeBinDir: fake.binDir })
+    }
+  );
+
+  assert.equal(result.status, 0);
+  const pluginRoot = path.join(projectDir, ".codex", "plugins", "architecture-diagram");
+  assert.equal(
+    await pathExists(path.join(pluginRoot, ".codex-plugin", "plugin.json")),
+    true
+  );
+  assert.equal(
+    await pathExists(
+      path.join(
+        pluginRoot,
+        "skills",
+        "architecture-diagram",
+        "references",
+        "architecture-reference.html"
+      )
+    ),
+    true
+  );
+
+  const marketplace = await readJsonFile(
+    path.join(projectDir, ".agents", "plugins", "marketplace.json")
+  );
+  assert.equal(
+    marketplace.plugins.find((plugin) => plugin.name === "architecture-diagram").source.path,
+    "./.codex/plugins/architecture-diagram"
+  );
+
+  const commandLog = await fs.readFile(fake.codexLog, "utf8");
+  assert.match(commandLog, /plugin add architecture-diagram@agent-plugins-installer/);
+});
+
 test("install all --scope project 는 codex, claude, gemini를 함께 설치한다", async (t) => {
   const projectDir = await createTempDir(t, "agent-plugins-project-");
   const homeDir = await createTempDir(t, "agent-plugins-home-");

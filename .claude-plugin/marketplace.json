@@ -28,6 +28,11 @@
       "name": "web-a11y",
       "source": "./.generated/direct/claude/web-a11y",
       "description": "Playwright-based accessibility audit reports for React, Next.js, Thymeleaf, and other web app URLs in Claude Code."
+    },
+    {
+      "name": "architecture-diagram",
+      "source": "./.generated/direct/claude/architecture-diagram",
+      "description": "HTML architecture diagrams with SVG connectors and resource allocation tables in Claude Code."
     }
   ]
 }

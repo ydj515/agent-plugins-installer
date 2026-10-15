@@ -55,6 +55,17 @@
       "enabledByDefault": true,
       "tags": ["web", "react", "nextjs", "thymeleaf", "a11y", "accessibility"],
       "groups": ["coding", "quality"]
+    },
+    {
+      "id": "architecture-diagram",
+      "title": "Architecture Diagram",
+      "description": "Shared HTML architecture diagram and resource allocation bundle built from spreadsheets, images, or text requirements across Codex, Claude Code, and Gemini CLI.",
+      "version": "0.1.0",
+      "sourceDir": "plugins/architecture-diagram",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["architecture", "diagram", "html", "infrastructure"],
+      "groups": ["design", "document"]
     }
   ]
 }

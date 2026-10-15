@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>서비스 아키텍처 구성도 예시</title>
+    <style>
+      :root {
+        --bg: #f5f7fa;
+        --ink: #1f2937;
+        --muted: #6b7280;
+        --line: #475569;
+        --inet-bg: #eaf3ff;
+        --inet-bd: #3b82f6;
+        --biz-bg: #ecfdf5;
+        --biz-bd: #10b981;
+        --prod: #15803d;
+        --stg: #c2410c;
+        --card: #ffffff;
+        --warn: #b45309;
+        --external: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.45;
+      }
+      header {
+        padding: 28px 40px 12px;
+      }
+      header h1 {
+        margin: 0 0 6px;
+        font-size: 24px;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .kpis {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 40px 4px;
+      }
+      .kpi {
+        background: var(--card);
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px 18px;
+        min-width: 150px;
+      }
+      .kpi b {
+        display: block;
+        font-size: 22px;
+        color: #1e293b;
+      }
+      .kpi span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .kpi.full b {
+        color: #15803d;
+      }
+
+      section {
+        padding: 18px 40px;
+      }
+      section h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+      }
+
+      /* ---------- Diagram ---------- */
+      .diagram-wrap {
+        overflow-x: auto;
+        background: var(--card);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .canvas {
+        position: relative;
+        width: 1400px;
+        height: 856px;
+        margin: 0 auto;
+      }
+      .canvas > * {
+        position: absolute;
+      }
+
+      .zone {
+        border-radius: 14px;
+        border: 2px solid;
+      }
+      .zone-hdr {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 10px 18px;
+      }
+      .zone .zlabel {
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .zone .zsub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .zone.inet {
+        background: var(--inet-bg);
+        border-color: var(--inet-bd);
+      }
+      .zone.inet .zlabel {
+        color: #1d4ed8;
+      }
+      .zone.biz {
+        background: var(--biz-bg);
+        border-color: var(--biz-bd);
+      }
+      .zone.biz .zlabel {
+        color: #047857;
+      }
+
+      .lane {
+        border-radius: 12px;
+        border: 2px dashed;
+        background: rgba(255, 255, 255, 0.62);
+      }
+      .lane .llabel {
+        position: absolute;
+        left: 14px;
+        top: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 12px;
+        border-radius: 999px;
+        color: #fff;
+        line-height: 1.4;
+      }
+      .lane.prod {
+        border-color: #86efac;
+      }
+      .lane.prod .llabel {
+        background: var(--prod);
+      }
+      .lane.stg {
+        border-color: #fdba74;
+      }
+      .lane.stg .llabel {
+        background: var(--stg);
+      }
+
+      .actor {
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: center;
+        background: #fff;
+        border: 2px solid #334155;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
+      }
+      .actor small {
+        font-weight: 500;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .actor.external {
+        border-color: var(--external);
+        color: var(--external);
+      }
+
+      .net-dev {
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+        background: #f8fafc;
+        border: 2px solid #64748b;
+        color: #1e293b;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+      }
+      .net-dev small {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .vip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 7px;
+        background: #fff;
+        border: 1.5px solid #64748b;
+        color: #334155;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        white-space: nowrap;
+      }
+      .vip.external {
+        border-color: var(--external);
+        color: var(--external);
+        background: #f8fbff;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        box-sizing: border-box;
+      }
+      .card .ctitle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.3;
+      }
+      .card .ctitle .cnt {
+        flex: none;
+        font-size: 11px;
+        font-weight: 600;
+        background: #1e293b;
+        color: #fff;
+        border-radius: 999px;
+        padding: 1px 8px;
+      }
+      .card .tier {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: -4px;
+        line-height: 1.25;
+      }
+      .node-row {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+        align-items: stretch;
+      }
+      .node-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+        gap: 6px;
+      }
+      .node {
+        border-radius: 8px;
+        padding: 7px 11px;
+        font-size: 12px;
+        border: 1px solid;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .node b {
+        display: block;
+        font-size: 12px;
+        margin-bottom: 2px;
+        white-space: nowrap;
+      }
+      .node span {
+        color: var(--muted);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .t-web .node {
+        background: #f0f9ff;
+        border-color: #bae6fd;
+      }
+      .t-was .node {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+      }
+      .t-api .node {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+      }
+      .t-db .node {
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
+      .db-note {
+        border-radius: 8px;
+        background: #fefce8;
+        border: 1px dashed #fde047;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #854d0e;
+        text-align: center;
+        line-height: 1.4;
+      }
+
+      /* 검증 직접 접속 라벨 배지 */
+      .stg-tag {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #ffffff;
+        border: 1px dashed #64748b;
+        color: #334155;
+        padding: 0 10px;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      }
+      .stg-tag.external {
+        border-color: var(--external);
+        color: var(--external);
+        background: #f8fbff;
+      }
+
+      svg.links {
+        left: 0;
+        top: 0;
+        width: 1400px;
+        height: 856px;
+        pointer-events: none;
+        overflow: visible;
+      }
+      svg.links path {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 2;
+      }
+      svg.links path.external {
+        stroke: var(--external);
+      }
+      svg.links path.stg {
+        stroke-dasharray: 6 4;
+      }
+      svg.links circle.joint {
+        fill: var(--line);
+      }
+      svg.links circle.joint.external {
+        fill: var(--external);
+      }
+      svg.links marker path {
+        stroke: none;
+      }
+      svg.links #arr path {
+        fill: var(--line);
+      }
+      svg.links #arr-d path {
+        fill: var(--external);
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #374151;
+      }
+      .legend i {
+        display: inline-block;
+        width: 28px;
+        height: 0;
+        vertical-align: middle;
+        margin-right: 6px;
+        border-top: 2px solid var(--line);
+      }
+      .legend i.external {
+        border-top: 2px solid var(--external);
+      }
+      .legend i.stg {
+        border-top: 2px dashed var(--line);
+      }
+
+      /* ---------- Table ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        font-size: 13px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+      }
+      th,
+      td {
+        padding: 7px 10px;
+        border-bottom: 1px solid #eef0f3;
+        text-align: left;
+        white-space: nowrap;
+      }
+      th {
+        background: #f1f5f9;
+        font-size: 12px;
+        color: #334155;
+      }
+      td.num,
+      th.num {
+        text-align: right;
+      }
+      tr.total td {
+        font-weight: 700;
+        background: #f8fafc;
+      }
+      tr.sub td {
+        font-weight: 600;
+        background: #fafafa;
+        color: #374151;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .pill.inet {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .pill.biz {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .pill.prod {
+        background: #dcfce7;
+        color: var(--prod);
+      }
+      .pill.stg {
+        background: #ffedd5;
+        color: var(--stg);
+      }
+      .flag {
+        color: #b91c1c;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      footer {
+        padding: 10px 40px 30px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>서비스 아키텍처 구성도 예시</h1>
+      <p>가상 시스템의 구성도 및 자원 배정 예시입니다. 실제 기관·시스템 자료가 아닙니다.</p>
+    </header>
+
+    <div class="kpis">
+      <div class="kpi full">
+        <b>12 VM (100%)</b><span>운영 8 (이중화) + 검증 4 (단일)</span>
+      </div>
+      <div class="kpi full">
+        <b>56 vCore (100%)</b><span>CPU 총량 56 완전 소진</span>
+      </div>
+      <div class="kpi full">
+        <b>256 GB (100%)</b><span>Memory 총량 256 완전 소진</span>
+      </div>
+      <div class="kpi full">
+        <b>1,200 GB (100%)</b><span>HDD 총량 1,200 완전 소진</span>
+      </div>
+      <div class="kpi full">
+        <b>3,200 GB (100%)</b><span>SAN 총량 3,200 완전 소진</span>
+      </div>
+      <div class="kpi full">
+        <b>0 VM 잔여</b><span>유휴 자원 0개 (예시 배정)</span>
+      </div>
+    </div>
+
+    <section>
+      <h2>1. 논리 / 배치 구성도</h2>
+      <div class="diagram-wrap">
+        <div class="canvas">
+          <!-- Zone 1: 인터넷망 (L4 · 서비스 포털 WEB) -->
+          <div
+            class="zone inet"
+            style="left: 215px; top: 16px; width: 470px; height: 824px"
+          >
+            <div class="zone-hdr">
+              <span class="zlabel">인터넷망</span>
+              <span class="zsub">대외 접점 구간 (L4 · WEB)</span>
+            </div>
+          </div>
+
+          <!-- Zone 2: 업무망 (서비스 API L4 · 서비스 포털 WAS · 서비스 API 서버 · DB) -->
+          <div
+            class="zone biz"
+            style="left: 701px; top: 16px; width: 683px; height: 824px"
+          >
+            <div class="zone-hdr">
+              <span class="zlabel">업무망</span>
+              <span class="zsub"
+                >내부 업무 · 데이터 구간 (서비스 API L4 · WAS · 서비스 API · DB)</span
+              >
+            </div>
+          </div>
+
+          <!-- Lanes (인터넷망 ~ 업무망 가로지름) -->
+          <div
+            class="lane prod"
+            style="left: 230px; top: 52px; width: 1140px; height: 442px"
+          >
+            <span class="llabel">운영 (8 VM - 이중화)</span>
+          </div>
+          <div
+            class="lane stg"
+            style="left: 230px; top: 512px; width: 1140px; height: 312px"
+          >
+            <span class="llabel">검증 (4 VM - 단일 구성)</span>
+          </div>
+
+          <!-- Actors -->
+          <div
+            class="actor"
+            style="left: 24px; top: 150px; width: 136px; height: 72px"
+          >
+            관리자<small>서비스 포털 사용자</small>
+          </div>
+          <div
+            class="actor external"
+            style="left: 24px; top: 346px; width: 136px; height: 80px"
+          >
+            외부 시스템<small>외부 연계 시스템</small>
+          </div>
+
+          <!-- Prod: 관리자 WEB L4 스위치 & VIP (in 인터넷망, y: 94..278) -->
+          <div
+            class="net-dev l4"
+            style="left: 248px; top: 94px; width: 144px; height: 184px"
+          >
+            L4 스위치
+            <small>부하분산 (Active-Active)</small>
+          </div>
+          <div
+            class="vip"
+            style="left: 260px; top: 168px; width: 120px; height: 36px"
+          >
+            VIP : 관리자 WEB
+          </div>
+          <!-- Prod: 서비스 API L4 스위치 & VIP (in 업무망, y: 294..478) -->
+          <div
+            class="net-dev l4"
+            style="left: 726px; top: 294px; width: 144px; height: 184px"
+          >
+            L4 스위치
+            <small>부하분산 (Active-Active)</small>
+          </div>
+          <div
+            class="vip external"
+            style="left: 738px; top: 368px; width: 120px; height: 36px"
+          >
+            VIP : 서비스 API
+          </div>
+
+          <!-- Prod: 서비스 포털 WEB (in 인터넷망, y: 94..278, center y=186) -->
+          <div
+            class="card t-web"
+            style="left: 436px; top: 94px; width: 224px; height: 184px"
+          >
+            <div class="ctitle">서비스 포털 WEB <span class="cnt">x2</span></div>
+            <div class="tier">Presentation</div>
+            <div class="node-col">
+              <div class="node"><b>WEB #1</b><span>4C / 8GB</span></div>
+              <div class="node"><b>WEB #2</b><span>4C / 8GB</span></div>
+            </div>
+          </div>
+
+          <!-- Prod: 서비스 포털 WAS (in 업무망, y: 94..278, center y=186) -->
+          <div
+            class="card t-was"
+            style="left: 886px; top: 94px; width: 224px; height: 184px"
+          >
+            <div class="ctitle">서비스 포털 WAS <span class="cnt">x2</span></div>
+            <div class="tier">Application (WAS)</div>
+            <div class="node-col">
+              <div class="node"><b>관리자 WAS #1</b><span>4C / 16GB</span></div>
+              <div class="node"><b>관리자 WAS #2</b><span>4C / 16GB</span></div>
+            </div>
+          </div>
+
+          <!-- Prod: 서비스 API 서버 (in 업무망, y: 294..478, center y=386) -->
+          <div
+            class="card t-api"
+            style="left: 886px; top: 294px; width: 224px; height: 184px"
+          >
+            <div class="ctitle">서비스 API 서버 <span class="cnt">x2</span></div>
+            <div class="tier">API Server (외부 시스템 연계 전용)</div>
+            <div class="node-col">
+              <div class="node"><b>서비스 API #1</b><span>4C / 16GB </span></div>
+              <div class="node"><b>서비스 API #2</b><span>4C / 16GB </span></div>
+            </div>
+          </div>
+
+          <!-- Prod: DB (in 업무망, y: 94..478, spans both rows) -->
+          <div
+            class="card t-db"
+            style="left: 1144px; top: 94px; width: 212px; height: 384px"
+          >
+            <div class="ctitle">DB <span class="cnt">x2</span></div>
+            <div class="tier">Data (DBMS 미기재)</div>
+            <div class="node-col" style="padding: 10px 0">
+              <div class="node" style="max-height: 115px">
+                <b>DB #1</b><span>8C / 32GB / SAN 900</span>
+              </div>
+              <div class="node" style="max-height: 115px">
+                <b>DB #2</b><span>8C / 32GB / SAN 900</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stg: 서비스 포털 WEB (in 인터넷망, y: 556..674, center y=615) -->
+          <div
+            class="card t-web"
+            style="left: 436px; top: 556px; width: 224px; height: 118px"
+          >
+            <div class="ctitle">서비스 포털 WEB <span class="cnt">x1</span></div>
+            <div class="tier">Presentation</div>
+            <div class="node"><b>WEB (검증)</b><span>4C / 8GB </span></div>
+          </div>
+
+          <!-- Stg: 서비스 포털 WAS (in 업무망, y: 556..674, center y=615) -->
+          <div
+            class="card t-was"
+            style="left: 886px; top: 556px; width: 224px; height: 118px"
+          >
+            <div class="ctitle">서비스 포털 WAS <span class="cnt">x1</span></div>
+            <div class="tier">Application</div>
+            <div class="node">
+              <b>관리자 WAS (검증)</b><span>4C / 8GB </span>
+            </div>
+          </div>
+
+          <!-- Stg: 서비스 API 서버 (in 업무망, y: 690..808, center y=749) -->
+          <div
+            class="card t-api"
+            style="left: 886px; top: 690px; width: 224px; height: 118px"
+          >
+            <div class="ctitle">서비스 API 서버 <span class="cnt">x1</span></div>
+            <div class="tier">API Server (외부 시스템 연계 전용)</div>
+            <div class="node">
+              <b>서비스 API (검증)</b><span>4C / 16GB </span>
+            </div>
+          </div>
+
+          <!-- Stg: DB (in 업무망, y: 556..808, spans both Stg rows) -->
+          <div
+            class="card t-db"
+            style="left: 1144px; top: 556px; width: 212px; height: 252px"
+          >
+            <div class="ctitle">DB <span class="cnt">x1</span></div>
+            <div class="tier">Data (DBMS 미기재)</div>
+            <div class="node-col">
+              <div class="node">
+                <b>DB (검증)</b><span>4C / 16GB / SAN 300</span>
+              </div>
+              <div class="db-note">
+                관리자 WAS · 서비스 API<br />검증 DB 통합 수용
+              </div>
+            </div>
+          </div>
+
+          <!-- Links (SVG 1:1 viewBox 1400x856) -->
+          <svg class="links" viewBox="0 0 1400 856" aria-hidden="true">
+            <defs>
+              <marker
+                id="arr"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0 L10,5 L0,10 z"></path>
+              </marker>
+              <marker
+                id="arr-d"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0 L10,5 L0,10 z"></path>
+              </marker>
+            </defs>
+
+            <!-- Prod: 관리자 -> L4(VIP) -> WEB(인터넷망) -> WAS(업무망) -> DB(업무망) (y = 186) -->
+            <path d="M160,186 H246" marker-end="url(#arr)"></path>
+            <path d="M392,186 H434" marker-end="url(#arr)"></path>
+            <path d="M660,186 H884" marker-end="url(#arr)"></path>
+            <path d="M1110,186 H1142" marker-end="url(#arr)"></path>
+
+            <!-- Prod: 외부 시스템 -> L4(VIP, 업무망) -> 서비스 API(업무망) -> DB(업무망) (y = 386) -->
+            <path class="external" d="M160,386 H724" marker-end="url(#arr-d)"></path>
+            <path class="external" d="M870,386 H884" marker-end="url(#arr-d)"></path>
+            <path class="external" d="M1110,386 H1142" marker-end="url(#arr-d)"></path>
+
+            <!-- Stg: 관리자 -> WEB(인터넷망) -> WAS(업무망) -> DB(업무망) (L4 없음, y = 615) -->
+            <circle class="joint" cx="196" cy="186" r="3.5"></circle>
+            <path
+              class="stg"
+              d="M196,186 V379 A7,7 0 0,1 196,393 V615 H434"
+              marker-end="url(#arr)"
+            ></path>
+            <path class="stg" d="M660,615 H884" marker-end="url(#arr)"></path>
+            <path class="stg" d="M1110,615 H1142" marker-end="url(#arr)"></path>
+
+            <!-- Stg: 외부 시스템 -> 서비스 API(업무망) -> DB(업무망) (L4 없음, y = 749) -->
+            <circle class="joint external" cx="178" cy="386" r="3.5"></circle>
+            <path
+              class="external stg"
+              d="M178,386 V749 H884"
+              marker-end="url(#arr-d)"
+            ></path>
+            <path
+              class="external stg"
+              d="M1110,749 H1142"
+              marker-end="url(#arr-d)"
+            ></path>
+          </svg>
+
+          <!-- Stg: 직접 접속 안내 배지 -->
+          <div
+            class="stg-tag"
+            style="left: 252px; top: 601px; width: 136px; height: 28px"
+          >
+            관리자 검증 접속 (L4 없음)
+          </div>
+          <div
+            class="stg-tag external"
+            style="left: 252px; top: 735px; width: 136px; height: 28px"
+          >
+            외부 시스템 검증 연계 (L4 없음)
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i></i>관리자 흐름 (포털 조회/관리)</span>
+        <span><i class="external"></i>외부 시스템 흐름 (API 트래픽)</span>
+        <span
+          ><i class="stg"></i>검증 환경 흐름 (점선 · L4 미경유 직접 연결)</span
+        >
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 자원 배정안 예시 (12 VM)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>환경</th>
+            <th>역할</th>
+            <th>자원명 (예시)</th>
+            <th>망구분</th>
+            <th class="num">Core</th>
+            <th class="num">Mem(GB)</th>
+            <th class="num">HDD(GB)</th>
+            <th class="num">SAN(GB)</th>
+            <th>OS</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 포털 WEB #1</td>
+            <td>vm-prod-web-01</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">2</td>
+            <td class="num">8</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 포털 WEB #2</td>
+            <td>vm-prod-web-02</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">2</td>
+            <td class="num">8</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 포털 WAS #1</td>
+            <td>vm-prod-app-01</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>Oracle Linux</td>
+            <td>배치 예시</td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 포털 WAS #2</td>
+            <td>vm-prod-app-02</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>Oracle Linux</td>
+            <td>배치 예시</td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 API 서버 #1</td>
+            <td>vm-prod-api-01</td>
+            <td><span class="pill biz">업무망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>RHEL</td>
+            <td><span class="flag">배치 예시</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>서비스 API 서버 #2</td>
+            <td>vm-prod-api-02</td>
+            <td><span class="pill biz">업무망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>RHEL</td>
+            <td><span class="flag">배치 예시</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>DB #1</td>
+            <td>vm-prod-db-01</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">12</td>
+            <td class="num">64</td>
+            <td class="num">100</td>
+            <td class="num">900</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="pill prod">운영</span></td>
+            <td>DB #2</td>
+            <td>vm-prod-db-02</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">12</td>
+            <td class="num">64</td>
+            <td class="num">100</td>
+            <td class="num">900</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr class="sub">
+            <td colspan="4">운영 소계 (8 VM)</td>
+            <td class="num">44</td>
+            <td class="num">208</td>
+            <td class="num">800</td>
+            <td class="num">2,400</td>
+            <td colspan="2"></td>
+          </tr>
+
+          <tr>
+            <td><span class="pill stg">검증</span></td>
+            <td>서비스 포털 WEB</td>
+            <td>vm-test-web-01</td>
+            <td><span class="pill biz">업무망</span></td>
+            <td class="num">2</td>
+            <td class="num">8</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>RHEL</td>
+            <td><span class="flag">배치 예시</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill stg">검증</span></td>
+            <td>서비스 포털 WAS</td>
+            <td>vm-test-app-01</td>
+            <td><span class="pill biz">업무망</span></td>
+            <td class="num">2</td>
+            <td class="num">8</td>
+            <td class="num">100</td>
+            <td class="num">100</td>
+            <td>RHEL</td>
+            <td><span class="flag">배치 예시</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill stg">검증</span></td>
+            <td>서비스 API 서버</td>
+            <td>vm-test-api-01</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">300</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="pill stg">검증</span></td>
+            <td>DB</td>
+            <td>vm-test-db-01</td>
+            <td><span class="pill inet">인터넷망</span></td>
+            <td class="num">4</td>
+            <td class="num">16</td>
+            <td class="num">100</td>
+            <td class="num">300</td>
+            <td>Oracle Linux</td>
+            <td></td>
+          </tr>
+          <tr class="sub">
+            <td colspan="4">검증 소계 (4 VM)</td>
+            <td class="num">12</td>
+            <td class="num">48</td>
+            <td class="num">400</td>
+            <td class="num">800</td>
+            <td colspan="2"></td>
+          </tr>
+
+          <tr class="total">
+            <td colspan="4">총계 (12 VM)</td>
+            <td class="num">56</td>
+            <td class="num">256</td>
+            <td class="num">1,200</td>
+            <td class="num">3,200</td>
+            <td colspan="2">유휴 자원 0</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>표현 형식을 보여 주는 가상 예시입니다. 자원 수량·사양과 연결 관계는 실제 입력 자료에 따라 작성합니다.</footer>
+  </body>
+</html>

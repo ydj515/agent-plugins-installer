@@ -1,0 +1,6 @@
+{
+  "name": "architecture-diagram",
+  "version": "0.1.0",
+  "description": "Standalone HTML architecture diagrams with card layouts, SVG connectors, and resource allocation tables built from spreadsheets, images, or text requirements.",
+  "contextFileName": "GEMINI.md"
+}
