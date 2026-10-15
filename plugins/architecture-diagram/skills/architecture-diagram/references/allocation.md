@@ -1,55 +1,55 @@
-# 자원 배정 규칙
+# Resource Allocation Rules
 
-## 배정표
+## Allocation Table
 
-기본 열: 상태, 환경, 역할/인스턴스, 자원 ID·명, 망, 수량, CPU, 메모리, 로컬 디스크, 공유 스토리지, OS, 비고/확인 사항, 출처. 입력에 없는 사양은 `미기재`로 표시한다. 기존 자원 목록이 없는 신규 설계에서는 제안 자원 ID를 만들고 출처를 사용자 요구사항 또는 설계 가정으로 표시한다.
+Default columns: status, environment, role/instance, resource ID and name, network, quantity, CPU, memory, local disk, shared storage, OS, notes/items to confirm, source. Mark specs missing from the input as `not specified`. For a new design without an existing resource list, create proposed resource IDs and mark the source as user requirements or design assumptions.
 
-각 행은 개별 인스턴스 또는 동일 사양의 명확한 수량 그룹이다. 수량 그룹은 사양이 대당인지 그룹 전체인지 열 머리글에 명시한다. 하나의 자원이 여러 역할을 겸하면 자원 배정은 한 번만 기록하고 역할을 복수로 연결한다.
+Each row is either an individual instance or a clearly defined quantity group with identical specs. For quantity groups, state in the column header whether specs are per unit or for the whole group. If one resource serves multiple roles, record its allocation once and link it to multiple roles.
 
-예시 데이터 형태(설명용이며 실제 결과에는 입력값을 사용):
+Example data shape (illustrative only; use input values in actual results):
 
 ```json
 {
   "resources": [{
     "id": "r1", "name": "source-01", "kind": "vm", "quantity": 1,
-    "network": "내부망", "cpu": 4, "memoryGB": 16,
+    "network": "internal", "cpu": 4, "memoryGB": 16,
     "localDiskGB": 100, "sanGB": null,
-    "source": {"file": "resources.xlsx", "sheet": "자원", "row": 5}
+    "source": {"file": "resources.xlsx", "sheet": "Resources", "row": 5}
   }],
   "allocations": [{
     "id": "a1", "resourceId": "r1", "quantity": 1,
-    "environment": "운영", "role": "Application", "network": "내부망",
+    "environment": "production", "role": "Application", "network": "internal",
     "cpu": 4, "memoryGB": 16, "localDiskGB": 100, "sanGB": null,
-    "status": "proposed", "reason": "사용자 요구 역할에 배정"
+    "status": "proposed", "reason": "Assigned to the role requested by the user"
   }],
   "nodes": [{"id": "app", "allocationIds": ["a1"], "label": "Application"}],
   "edges": []
 }
 ```
 
-## 계산 및 보존
+## Calculation and Preservation
 
-- `null`은 미확인, `0`은 확인된 0이다. 미확인 값이 있는 총계는 확인된 부분 합계와 누락 건수를 함께 표시한다.
-- 대당 사양이면 `행 총량 = 수량 × 대당 사양`. 이미 그룹 총량인 값을 수량으로 다시 곱하지 않는다.
-- CPU의 물리 Core, vCore, vCPU는 확인 없이 합산하거나 같은 단위로 바꾸지 않는다. GB/GiB, TB/TiB도 구분하고 변환 시 기준을 명시한다.
-- 환경 소계와 전체 총계는 중복되지 않는 배정 데이터에서 산출한다. 물리 서버, VM, 컨테이너, 네트워크 장비는 개수를 따로 센다.
-- `잔여 = 확인된 보유량 − 배정량`을 같은 단위·범위에서 산출한다. 음수이면 0으로 숨기지 말고 초과 배정으로 표시한다. 자원 개수 잔여와 용량 잔여는 구분한다.
-- 공유 SAN은 풀을 고유 ID로 관리하고 여러 서버에 연결되었다고 용량을 중복 합산하지 않는다. 개별 할당량과 풀 용량을 구분한다.
-- 하나의 자원 풀에서 여러 역할에 용량을 배정하면 풀 참조와 용량 한도를 보존한다. 자원 ID의 복수 참조 자체를 무조건 오류로 보지 말고, 의도된 공유인지와 합산 용량을 검사한다.
-- 제안 사양은 입력에서 확인된 사양과 구분한다. 임의로 물리 자원을 VM처럼 분할하지 않는다.
-- 보유 용량/가상화 한도가 없으면 과할당 가능 여부를 확정하지 않는다. 사용률·여유율은 분모를 확인할 수 있을 때만 계산한다.
+- `null` means unknown; `0` means a confirmed zero. For totals that include unknown values, show the confirmed partial total together with the number of missing items.
+- For per-unit specs, `row total = quantity × per-unit spec`. Do not multiply a value that is already a group total by the quantity again.
+- Do not sum or convert physical cores, vCores, and vCPUs into one unit without confirmation. Distinguish GB/GiB and TB/TiB as well, and state the basis when converting.
+- Derive environment subtotals and the grand total from non-duplicated allocation data. Count physical servers, VMs, containers, and network devices separately.
+- Compute `remaining = confirmed capacity − allocated amount` in the same unit and scope. If negative, do not hide it as 0; show it as over-allocation. Distinguish remaining resource counts from remaining capacity.
+- Manage a shared SAN as a pool with a unique ID, and do not add its capacity again just because multiple servers are attached to it. Distinguish individual allocations from pool capacity.
+- When capacity from one resource pool is allocated to multiple roles, preserve the pool reference and its capacity limit. Do not automatically treat multiple references to a resource ID as an error; check whether the sharing is intended and verify the summed capacity.
+- Keep proposed specs separate from specs confirmed in the input. Do not arbitrarily split physical resources as if they were VMs.
+- Without known capacity or virtualization limits, do not conclude whether over-commit is possible. Calculate utilization or headroom only when the denominator can be confirmed.
 
-## 배정 판단
+## Allocation Decisions
 
-사용자가 정한 환경·망·역할·최소 사양을 먼저 반영한다. 보유 자원이 주어지면 그 범위에서 배정하고 부족분·잔여분을 표시한다. 보유량이 없는 신규 설계는 필요 자원을 제안하되 잔여량과 사용률을 계산하지 않는다. 모든 자원을 소진하기 위해 불필요한 역할을 만들지 않는다. 새로 설계한 배정은 제안 상태로 작성하며, 실제 시스템을 변경하지 않는다.
+Apply the environments, networks, roles, and minimum specs set by the user first. When available resources are given, allocate within them and show shortfalls and remainders. For a new design with no available capacity given, propose the required resources but do not calculate remaining capacity or utilization. Do not invent unnecessary roles just to use up all resources. Write newly designed allocations with proposed status, and do not change any real system.
 
-운영 2대/검증 1대 같은 수량, Active-Active, DB 복제, L4/VIP, 검증 환경 직접 접속은 입력 근거가 없으면 자동 적용하지 않는다. 자원 목록만으로 통신 경로를 증명할 수 없으므로 연결은 근거 있는 흐름 또는 명시적 제안으로 그린다.
+Do not automatically apply quantities such as 2 production / 1 staging, Active-Active, DB replication, L4/VIP, or direct access to the staging environment unless the input supports them. A resource list alone cannot prove communication paths, so draw connections only as evidenced flows or explicit proposals.
 
-## 의미 검증 사례
+## Semantic Verification Cases
 
-- 4 vCPU 자원 2대면 8 vCPU이며, 개별 2행과 그룹 1행이 동시에 집계되면 실패.
-- 메모리 16 GB 1대와 미기재 1대면 `확인분 16 GB, 1대 미확인`이며 확정 총량 16 GB가 아님.
-- 1000 GB 공유 풀에 서버 2대가 연결돼도 보유량은 1000 GB.
-- 보유 8 vCPU에 10 vCPU 배정이면 `2 vCPU 초과`.
-- 같은 VM에 WEB/WAS 역할이 함께 있으면 VM 수는 1대.
-- 보유량 없이 8 vCPU 서버를 제안하면 카드·배정표에는 8과 제안 상태를 표시하고, 잔여량이나 사용률은 표시하지 않음.
+- Two resources with 4 vCPU each total 8 vCPU; counting both the two individual rows and a group row at the same time is a failure.
+- One unit with 16 GB memory and one unit with unspecified memory gives `16 GB confirmed, 1 unit unknown`, not a confirmed total of 16 GB.
+- A 1000 GB shared pool attached to two servers is still 1000 GB of capacity.
+- Allocating 10 vCPU against 8 vCPU of capacity is `2 vCPU over-allocated`.
+- A VM that hosts both WEB and WAS roles counts as one VM.
+- When proposing an 8 vCPU server without known capacity, show 8 and the proposed status in the card and allocation table, and do not show remaining capacity or utilization.

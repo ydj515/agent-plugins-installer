@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>서비스 아키텍처 구성도 예시</title>
+    <title>Service Architecture Diagram Example</title>
     <style>
       :root {
         --bg: #f5f7fa;
@@ -321,7 +321,7 @@
         line-height: 1.4;
       }
 
-      /* 검증 직접 접속 라벨 배지 */
+      /* Staging direct-access label badge */
       .stg-tag {
         display: flex;
         align-items: center;
@@ -473,71 +473,71 @@
   </head>
   <body>
     <header>
-      <h1>서비스 아키텍처 구성도 예시</h1>
-      <p>가상 시스템의 구성도 및 자원 배정 예시입니다. 실제 기관·시스템 자료가 아닙니다.</p>
+      <h1>Service Architecture Diagram Example</h1>
+      <p>An example architecture diagram and resource allocation for a fictional system. It does not describe any real organization or system.</p>
     </header>
 
     <div class="kpis">
       <div class="kpi full">
-        <b>12 VM (100%)</b><span>운영 8 (이중화) + 검증 4 (단일)</span>
+        <b>12 VM (100%)</b><span>Production 8 (redundant) + Staging 4 (single)</span>
       </div>
       <div class="kpi full">
-        <b>56 vCore (100%)</b><span>CPU 총량 56 완전 소진</span>
+        <b>56 vCore (100%)</b><span>All 56 CPU cores allocated</span>
       </div>
       <div class="kpi full">
-        <b>256 GB (100%)</b><span>Memory 총량 256 완전 소진</span>
+        <b>256 GB (100%)</b><span>All 256 GB memory allocated</span>
       </div>
       <div class="kpi full">
-        <b>1,200 GB (100%)</b><span>HDD 총량 1,200 완전 소진</span>
+        <b>1,200 GB (100%)</b><span>All 1,200 GB HDD allocated</span>
       </div>
       <div class="kpi full">
-        <b>3,200 GB (100%)</b><span>SAN 총량 3,200 완전 소진</span>
+        <b>3,200 GB (100%)</b><span>All 3,200 GB SAN allocated</span>
       </div>
       <div class="kpi full">
-        <b>0 VM 잔여</b><span>유휴 자원 0개 (예시 배정)</span>
+        <b>0 VM remaining</b><span>0 idle resources (example allocation)</span>
       </div>
     </div>
 
     <section>
-      <h2>1. 논리 / 배치 구성도</h2>
+      <h2>1. Logical / Deployment Diagram</h2>
       <div class="diagram-wrap">
         <div class="canvas">
-          <!-- Zone 1: 인터넷망 (L4 · 서비스 포털 WEB) -->
+          <!-- Zone 1: Internet network (L4 · Service Portal WEB) -->
           <div
             class="zone inet"
             style="left: 215px; top: 16px; width: 470px; height: 824px"
           >
             <div class="zone-hdr">
-              <span class="zlabel">인터넷망</span>
-              <span class="zsub">대외 접점 구간 (L4 · WEB)</span>
+              <span class="zlabel">Internet Network</span>
+              <span class="zsub">External-facing segment (L4 · WEB)</span>
             </div>
           </div>
 
-          <!-- Zone 2: 업무망 (서비스 API L4 · 서비스 포털 WAS · 서비스 API 서버 · DB) -->
+          <!-- Zone 2: Business network (Service API L4 · Service Portal WAS · Service API server · DB) -->
           <div
             class="zone biz"
             style="left: 701px; top: 16px; width: 683px; height: 824px"
           >
             <div class="zone-hdr">
-              <span class="zlabel">업무망</span>
+              <span class="zlabel">Business Network</span>
               <span class="zsub"
-                >내부 업무 · 데이터 구간 (서비스 API L4 · WAS · 서비스 API · DB)</span
+                >Internal business · data segment (Service API L4 · WAS · Service API · DB)</span
               >
             </div>
           </div>
 
-          <!-- Lanes (인터넷망 ~ 업무망 가로지름) -->
+          <!-- Lanes (spanning Internet to Business network) -->
           <div
             class="lane prod"
             style="left: 230px; top: 52px; width: 1140px; height: 442px"
           >
-            <span class="llabel">운영 (8 VM - 이중화)</span>
+            <span class="llabel">Production (8 VM - redundant)</span>
           </div>
           <div
             class="lane stg"
             style="left: 230px; top: 512px; width: 1140px; height: 312px"
           >
-            <span class="llabel">검증 (4 VM - 단일 구성)</span>
+            <span class="llabel">Staging (4 VM - single)</span>
           </div>
 
           <!-- Actors -->
@@ -545,50 +545,50 @@
             class="actor"
             style="left: 24px; top: 150px; width: 136px; height: 72px"
           >
-            관리자<small>서비스 포털 사용자</small>
+            Admin<small>Service portal users</small>
           </div>
           <div
             class="actor external"
             style="left: 24px; top: 346px; width: 136px; height: 80px"
           >
-            외부 시스템<small>외부 연계 시스템</small>
+            External System<small>External integration system</small>
           </div>
 
-          <!-- Prod: 관리자 WEB L4 스위치 & VIP (in 인터넷망, y: 94..278) -->
+          <!-- Prod: Admin WEB L4 switch & VIP (in Internet network, y: 94..278) -->
           <div
             class="net-dev l4"
             style="left: 248px; top: 94px; width: 144px; height: 184px"
           >
-            L4 스위치
-            <small>부하분산 (Active-Active)</small>
+            L4 Switch
+            <small>LB (Active-Active)</small>
           </div>
           <div
             class="vip"
             style="left: 260px; top: 168px; width: 120px; height: 36px"
           >
-            VIP : 관리자 WEB
+            VIP : Admin WEB
           </div>
-          <!-- Prod: 서비스 API L4 스위치 & VIP (in 업무망, y: 294..478) -->
+          <!-- Prod: Service API L4 switch & VIP (in Business network, y: 294..478) -->
           <div
             class="net-dev l4"
             style="left: 726px; top: 294px; width: 144px; height: 184px"
           >
-            L4 스위치
-            <small>부하분산 (Active-Active)</small>
+            L4 Switch
+            <small>LB (Active-Active)</small>
           </div>
           <div
             class="vip external"
             style="left: 738px; top: 368px; width: 120px; height: 36px"
           >
-            VIP : 서비스 API
+            VIP : Service API
           </div>
 
-          <!-- Prod: 서비스 포털 WEB (in 인터넷망, y: 94..278, center y=186) -->
+          <!-- Prod: Service Portal WEB (in Internet, y: 94..278, center y=186) -->
           <div
             class="card t-web"
             style="left: 436px; top: 94px; width: 224px; height: 184px"
           >
-            <div class="ctitle">서비스 포털 WEB <span class="cnt">x2</span></div>
+            <div class="ctitle">Service Portal WEB <span class="cnt">x2</span></div>
             <div class="tier">Presentation</div>
             <div class="node-col">
               <div class="node"><b>WEB #1</b><span>4C / 8GB</span></div>
@@ -596,39 +596,39 @@
             </div>
           </div>
 
-          <!-- Prod: 서비스 포털 WAS (in 업무망, y: 94..278, center y=186) -->
+          <!-- Prod: Service Portal WAS (in Business, y: 94..278, center y=186) -->
           <div
             class="card t-was"
             style="left: 886px; top: 94px; width: 224px; height: 184px"
           >
-            <div class="ctitle">서비스 포털 WAS <span class="cnt">x2</span></div>
+            <div class="ctitle">Service Portal WAS <span class="cnt">x2</span></div>
             <div class="tier">Application (WAS)</div>
             <div class="node-col">
-              <div class="node"><b>관리자 WAS #1</b><span>4C / 16GB</span></div>
-              <div class="node"><b>관리자 WAS #2</b><span>4C / 16GB</span></div>
+              <div class="node"><b>Admin WAS #1</b><span>4C / 16GB</span></div>
+              <div class="node"><b>Admin WAS #2</b><span>4C / 16GB</span></div>
             </div>
           </div>
 
-          <!-- Prod: 서비스 API 서버 (in 업무망, y: 294..478, center y=386) -->
+          <!-- Prod: Service API Server (in Business, y: 294..478, center y=386) -->
           <div
             class="card t-api"
             style="left: 886px; top: 294px; width: 224px; height: 184px"
           >
-            <div class="ctitle">서비스 API 서버 <span class="cnt">x2</span></div>
-            <div class="tier">API Server (외부 시스템 연계 전용)</div>
+            <div class="ctitle">Service API Server <span class="cnt">x2</span></div>
+            <div class="tier">API Server (external integration only)</div>
             <div class="node-col">
-              <div class="node"><b>서비스 API #1</b><span>4C / 16GB </span></div>
-              <div class="node"><b>서비스 API #2</b><span>4C / 16GB </span></div>
+              <div class="node"><b>Service API #1</b><span>4C / 16GB </span></div>
+              <div class="node"><b>Service API #2</b><span>4C / 16GB </span></div>
             </div>
           </div>
 
-          <!-- Prod: DB (in 업무망, y: 94..478, spans both rows) -->
+          <!-- Prod: DB (in Business, y: 94..478, spans both rows) -->
           <div
             class="card t-db"
             style="left: 1144px; top: 94px; width: 212px; height: 384px"
           >
             <div class="ctitle">DB <span class="cnt">x2</span></div>
-            <div class="tier">Data (DBMS 미기재)</div>
+            <div class="tier">Data (DBMS not specified)</div>
             <div class="node-col" style="padding: 10px 0">
               <div class="node" style="max-height: 115px">
                 <b>DB #1</b><span>8C / 32GB / SAN 900</span>
@@ -639,53 +639,53 @@
             </div>
           </div>
 
-          <!-- Stg: 서비스 포털 WEB (in 인터넷망, y: 556..674, center y=615) -->
+          <!-- Stg: Service Portal WEB (in Internet, y: 556..674, center y=615) -->
           <div
             class="card t-web"
             style="left: 436px; top: 556px; width: 224px; height: 118px"
           >
-            <div class="ctitle">서비스 포털 WEB <span class="cnt">x1</span></div>
+            <div class="ctitle">Service Portal WEB <span class="cnt">x1</span></div>
             <div class="tier">Presentation</div>
-            <div class="node"><b>WEB (검증)</b><span>4C / 8GB </span></div>
+            <div class="node"><b>WEB (staging)</b><span>4C / 8GB </span></div>
           </div>
 
-          <!-- Stg: 서비스 포털 WAS (in 업무망, y: 556..674, center y=615) -->
+          <!-- Stg: Service Portal WAS (in Business, y: 556..674, center y=615) -->
           <div
             class="card t-was"
             style="left: 886px; top: 556px; width: 224px; height: 118px"
           >
-            <div class="ctitle">서비스 포털 WAS <span class="cnt">x1</span></div>
+            <div class="ctitle">Service Portal WAS <span class="cnt">x1</span></div>
             <div class="tier">Application</div>
             <div class="node">
-              <b>관리자 WAS (검증)</b><span>4C / 8GB </span>
+              <b>Admin WAS (staging)</b><span>4C / 8GB </span>
             </div>
           </div>
 
-          <!-- Stg: 서비스 API 서버 (in 업무망, y: 690..808, center y=749) -->
+          <!-- Stg: Service API Server (in Business, y: 690..808, center y=749) -->
           <div
             class="card t-api"
             style="left: 886px; top: 690px; width: 224px; height: 118px"
           >
-            <div class="ctitle">서비스 API 서버 <span class="cnt">x1</span></div>
-            <div class="tier">API Server (외부 시스템 연계 전용)</div>
+            <div class="ctitle">Service API Server <span class="cnt">x1</span></div>
+            <div class="tier">API Server (external integration only)</div>
             <div class="node">
-              <b>서비스 API (검증)</b><span>4C / 16GB </span>
+              <b>Service API (staging)</b><span>4C / 16GB </span>
             </div>
           </div>
 
-          <!-- Stg: DB (in 업무망, y: 556..808, spans both Stg rows) -->
+          <!-- Stg: DB (in Business, y: 556..808, spans both Stg rows) -->
           <div
             class="card t-db"
             style="left: 1144px; top: 556px; width: 212px; height: 252px"
           >
             <div class="ctitle">DB <span class="cnt">x1</span></div>
-            <div class="tier">Data (DBMS 미기재)</div>
+            <div class="tier">Data (DBMS not specified)</div>
             <div class="node-col">
               <div class="node">
-                <b>DB (검증)</b><span>4C / 16GB / SAN 300</span>
+                <b>DB (staging)</b><span>4C / 16GB / SAN 300</span>
               </div>
               <div class="db-note">
-                관리자 WAS · 서비스 API<br />검증 DB 통합 수용
+                Hosts Admin WAS · Service API<br />staging DB together
               </div>
             </div>
           </div>
@@ -717,18 +717,18 @@
               </marker>
             </defs>
 
-            <!-- Prod: 관리자 -> L4(VIP) -> WEB(인터넷망) -> WAS(업무망) -> DB(업무망) (y = 186) -->
+            <!-- Prod: Admin -> L4(VIP) -> WEB(Internet) -> WAS(Business) -> DB(Business) (y = 186) -->
             <path d="M160,186 H246" marker-end="url(#arr)"></path>
             <path d="M392,186 H434" marker-end="url(#arr)"></path>
             <path d="M660,186 H884" marker-end="url(#arr)"></path>
             <path d="M1110,186 H1142" marker-end="url(#arr)"></path>
 
-            <!-- Prod: 외부 시스템 -> L4(VIP, 업무망) -> 서비스 API(업무망) -> DB(업무망) (y = 386) -->
+            <!-- Prod: External System -> L4(VIP, Business) -> Service API(Business) -> DB(Business) (y = 386) -->
             <path class="external" d="M160,386 H724" marker-end="url(#arr-d)"></path>
             <path class="external" d="M870,386 H884" marker-end="url(#arr-d)"></path>
             <path class="external" d="M1110,386 H1142" marker-end="url(#arr-d)"></path>
 
-            <!-- Stg: 관리자 -> WEB(인터넷망) -> WAS(업무망) -> DB(업무망) (L4 없음, y = 615) -->
+            <!-- Stg: Admin -> WEB(Internet) -> WAS(Business) -> DB(Business) (no L4, y = 615) -->
             <circle class="joint" cx="196" cy="186" r="3.5"></circle>
             <path
               class="stg"
@@ -738,7 +738,7 @@
             <path class="stg" d="M660,615 H884" marker-end="url(#arr)"></path>
             <path class="stg" d="M1110,615 H1142" marker-end="url(#arr)"></path>
 
-            <!-- Stg: 외부 시스템 -> 서비스 API(업무망) -> DB(업무망) (L4 없음, y = 749) -->
+            <!-- Stg: External System -> Service API(Business) -> DB(Business) (no L4, y = 749) -->
             <circle class="joint external" cx="178" cy="386" r="3.5"></circle>
             <path
               class="external stg"
@@ -752,54 +752,54 @@
             ></path>
           </svg>
 
-          <!-- Stg: 직접 접속 안내 배지 -->
+          <!-- Stg: direct-access notice badges -->
           <div
             class="stg-tag"
             style="left: 252px; top: 601px; width: 136px; height: 28px"
           >
-            관리자 검증 접속 (L4 없음)
+            Admin staging (no L4)
           </div>
           <div
             class="stg-tag external"
             style="left: 252px; top: 735px; width: 136px; height: 28px"
           >
-            외부 시스템 검증 연계 (L4 없음)
+            External staging (no L4)
           </div>
         </div>
       </div>
 
       <div class="legend">
-        <span><i></i>관리자 흐름 (포털 조회/관리)</span>
-        <span><i class="external"></i>외부 시스템 흐름 (API 트래픽)</span>
+        <span><i></i>Admin flow (portal view/manage)</span>
+        <span><i class="external"></i>External system flow (API traffic)</span>
         <span
-          ><i class="stg"></i>검증 환경 흐름 (점선 · L4 미경유 직접 연결)</span
+          ><i class="stg"></i>Staging flow (dashed · direct connection without L4)</span
         >
       </div>
     </section>
 
     <section>
-      <h2>2. 자원 배정안 예시 (12 VM)</h2>
+      <h2>2. Resource Allocation Example (12 VM)</h2>
       <table>
         <thead>
           <tr>
-            <th>환경</th>
-            <th>역할</th>
-            <th>자원명 (예시)</th>
-            <th>망구분</th>
+            <th>Environment</th>
+            <th>Role</th>
+            <th>Resource Name (example)</th>
+            <th>Network</th>
             <th class="num">Core</th>
             <th class="num">Mem(GB)</th>
             <th class="num">HDD(GB)</th>
             <th class="num">SAN(GB)</th>
             <th>OS</th>
-            <th>비고</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 포털 WEB #1</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service Portal WEB #1</td>
             <td>vm-prod-web-01</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">2</td>
             <td class="num">8</td>
             <td class="num">100</td>
@@ -808,10 +808,10 @@
             <td></td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 포털 WEB #2</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service Portal WEB #2</td>
             <td>vm-prod-web-02</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">2</td>
             <td class="num">8</td>
             <td class="num">100</td>
@@ -820,58 +820,58 @@
             <td></td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 포털 WAS #1</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service Portal WAS #1</td>
             <td>vm-prod-app-01</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>Oracle Linux</td>
-            <td>배치 예시</td>
+            <td>Placement example</td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 포털 WAS #2</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service Portal WAS #2</td>
             <td>vm-prod-app-02</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>Oracle Linux</td>
-            <td>배치 예시</td>
+            <td>Placement example</td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 API 서버 #1</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service API Server #1</td>
             <td>vm-prod-api-01</td>
-            <td><span class="pill biz">업무망</span></td>
+            <td><span class="pill biz">Business</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>RHEL</td>
-            <td><span class="flag">배치 예시</span></td>
+            <td><span class="flag">Placement example</span></td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
-            <td>서비스 API 서버 #2</td>
+            <td><span class="pill prod">Production</span></td>
+            <td>Service API Server #2</td>
             <td>vm-prod-api-02</td>
-            <td><span class="pill biz">업무망</span></td>
+            <td><span class="pill biz">Business</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>RHEL</td>
-            <td><span class="flag">배치 예시</span></td>
+            <td><span class="flag">Placement example</span></td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
+            <td><span class="pill prod">Production</span></td>
             <td>DB #1</td>
             <td>vm-prod-db-01</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">12</td>
             <td class="num">64</td>
             <td class="num">100</td>
@@ -880,10 +880,10 @@
             <td></td>
           </tr>
           <tr>
-            <td><span class="pill prod">운영</span></td>
+            <td><span class="pill prod">Production</span></td>
             <td>DB #2</td>
             <td>vm-prod-db-02</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">12</td>
             <td class="num">64</td>
             <td class="num">100</td>
@@ -892,7 +892,7 @@
             <td></td>
           </tr>
           <tr class="sub">
-            <td colspan="4">운영 소계 (8 VM)</td>
+            <td colspan="4">Production subtotal (8 VM)</td>
             <td class="num">44</td>
             <td class="num">208</td>
             <td class="num">800</td>
@@ -901,34 +901,34 @@
           </tr>
 
           <tr>
-            <td><span class="pill stg">검증</span></td>
-            <td>서비스 포털 WEB</td>
+            <td><span class="pill stg">Staging</span></td>
+            <td>Service Portal WEB</td>
             <td>vm-test-web-01</td>
-            <td><span class="pill biz">업무망</span></td>
+            <td><span class="pill biz">Business</span></td>
             <td class="num">2</td>
             <td class="num">8</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>RHEL</td>
-            <td><span class="flag">배치 예시</span></td>
+            <td><span class="flag">Placement example</span></td>
           </tr>
           <tr>
-            <td><span class="pill stg">검증</span></td>
-            <td>서비스 포털 WAS</td>
+            <td><span class="pill stg">Staging</span></td>
+            <td>Service Portal WAS</td>
             <td>vm-test-app-01</td>
-            <td><span class="pill biz">업무망</span></td>
+            <td><span class="pill biz">Business</span></td>
             <td class="num">2</td>
             <td class="num">8</td>
             <td class="num">100</td>
             <td class="num">100</td>
             <td>RHEL</td>
-            <td><span class="flag">배치 예시</span></td>
+            <td><span class="flag">Placement example</span></td>
           </tr>
           <tr>
-            <td><span class="pill stg">검증</span></td>
-            <td>서비스 API 서버</td>
+            <td><span class="pill stg">Staging</span></td>
+            <td>Service API Server</td>
             <td>vm-test-api-01</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
@@ -937,10 +937,10 @@
             <td></td>
           </tr>
           <tr>
-            <td><span class="pill stg">검증</span></td>
+            <td><span class="pill stg">Staging</span></td>
             <td>DB</td>
             <td>vm-test-db-01</td>
-            <td><span class="pill inet">인터넷망</span></td>
+            <td><span class="pill inet">Internet</span></td>
             <td class="num">4</td>
             <td class="num">16</td>
             <td class="num">100</td>
@@ -949,7 +949,7 @@
             <td></td>
           </tr>
           <tr class="sub">
-            <td colspan="4">검증 소계 (4 VM)</td>
+            <td colspan="4">Staging subtotal (4 VM)</td>
             <td class="num">12</td>
             <td class="num">48</td>
             <td class="num">400</td>
@@ -958,17 +958,17 @@
           </tr>
 
           <tr class="total">
-            <td colspan="4">총계 (12 VM)</td>
+            <td colspan="4">Total (12 VM)</td>
             <td class="num">56</td>
             <td class="num">256</td>
             <td class="num">1,200</td>
             <td class="num">3,200</td>
-            <td colspan="2">유휴 자원 0</td>
+            <td colspan="2">Idle resources 0</td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <footer>표현 형식을 보여 주는 가상 예시입니다. 자원 수량·사양과 연결 관계는 실제 입력 자료에 따라 작성합니다.</footer>
+    <footer>A fictional example that shows the presentation format. Resource quantities, specs, and connections must come from the actual input materials.</footer>
   </body>
 </html>

@@ -1,4 +1,4 @@
 interface:
-  display_name: "아키텍처 구성도 및 자원 배정안"
-  short_description: "엑셀·사진을 HTML 카드와 SVG 구성도 및 자원 배정안으로 변환"
-  default_prompt: "$architecture-diagram 첨부 자료를 바탕으로 HTML 카드와 SVG 연결선으로 아키텍처 구성도와 자원 배정안을 만들어줘."
+  display_name: "Architecture Diagram"
+  short_description: "Turn spreadsheets and photos into HTML architecture diagrams with resource allocation plans."
+  default_prompt: "Use $architecture-diagram to build an architecture diagram with HTML cards and SVG connectors and a resource allocation plan from the attached materials."
