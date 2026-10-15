@@ -2,23 +2,23 @@
 
 ## Hidden Helper Tasks
 
-반복 검증이나 destructive guard는 hidden helper task로 분리하는 편이 좋다.
+Split repeated validation and destructive guards into hidden helper tasks.
 
 ```toml
 [tasks._check-env]
 hide = true
-description = "필수 env를 검증한다."
+description = "Validate required environment variables."
 usage = '''
 about "mise run _check-env: fail when API_KEY is missing"
 '''
 run = '[ -n "$API_KEY" ] || { echo "Missing API_KEY"; exit 1; }'
 ```
 
-값의 존재만 확인한다면 `[env] API_KEY = { required = "..." }`가 더 짧다. helper task는 여러 값의 조합이나 외부 상태를 검사할 때 쓴다.
+If you only need to check that a value exists, `[env] API_KEY = { required = "..." }` is shorter. Use helper tasks to check combinations of values or external state.
 
-## 증분 Build
+## Incremental Builds
 
-입력과 산출물이 파일로 표현되면 `sources`와 `outputs`로 재실행을 건너뛴다.
+When inputs and outputs are files, skip reruns with `sources` and `outputs`.
 
 ```toml
 [tasks.build]
@@ -31,11 +31,11 @@ outputs = ["target/debug/mycli"]
 run = "cargo build"
 ```
 
-- `!`로 시작하는 항목은 제외한다. 뒤의 항목이 앞의 제외를 다시 포함할 수 있다.
-- task를 정의한 config 파일과 script는 항상 source로 취급된다.
-- `mise run --force`로 freshness 검사를 무시한다.
+- Entries that start with `!` are excluded. A later entry can include a file again.
+- The config file and script that define the task always count as sources.
+- `mise run --force` ignores the freshness check.
 
-## 외부 상태 기반 생략
+## Skipping Based on External State
 
 ```toml
 [tasks.setup]
@@ -47,11 +47,11 @@ skip_if = "examplectl workspace show"
 run = "examplectl workspace init"
 ```
 
-- `skip_if` 명령이 0으로 끝나면 task를 성공으로 보고 건너뛴다.
-- 출력은 버려지고 stdin이 없으므로 prompt를 띄우는 명령은 쓰지 않는다.
-- 없으면 실패해야 하는 조건은 `skip_if`가 아니라 `run`에서 검사한다.
+- When the `skip_if` command exits 0, the task is skipped and counted as successful.
+- Its output is discarded and it gets no stdin, so do not use commands that prompt.
+- Check conditions that should fail the task in `run`, not in `skip_if`.
 
-## 정리 작업
+## Cleanup
 
 ```toml
 [tasks.integration-test]
@@ -65,32 +65,32 @@ timeout = "15m"
 run = "./scripts/integration-test.sh"
 ```
 
-`depends_post`는 task가 시작된 뒤 성공/실패와 관계없이 실행된다.
+`depends_post` runs after the task starts, whether it succeeds or fails.
 
 ## CI / Quality Pipeline
 
-- `lint`와 `typecheck`는 병렬 후보가 될 수 있다.
-- `test`는 quality gate 이후에 두는 편이 읽기 쉽다.
-- artifact가 필요한 `build`는 그 이후에 둔다.
-- CI에서는 `mise run ci` 같은 단일 진입점을 두고, workflow 파일은 그 task만 호출한다.
+- `lint` and `typecheck` can run in parallel.
+- `test` reads best after the quality gates.
+- `build`, which produces artifacts, comes after that.
+- In CI, provide a single entry point such as `mise run ci`, and have the workflow file call only that task.
 
 ## Development Server
 
-- 프레임워크 자체 watch가 있으면 framework 명령을 그대로 감싼다.
-- 공통 wrapper가 필요할 때만 `mise` task가 dev server 진입점이 된다.
-- DB나 queue 같은 보조 서비스는 experimental `daemons`와 task의 `daemons` 속성으로 묶을 수 있다. 팀 표준으로 쓰기 전에 experimental 여부를 확인한다.
+- If the framework has its own watch mode, wrap the framework command as is.
+- Make a `mise` task the dev server entry point only when a shared wrapper is needed.
+- Supporting services such as a database or queue can be grouped with experimental `daemons` and the task's `daemons` property. Confirm the experimental status before adopting it as a team standard.
 
-## Long-Running Remote Workflow
+## Long-Running Remote Workflows
 
-SSH, batch queue, remote GPU job처럼 오래 걸리는 흐름은 `depends`만으로 orchestration하지 않는다.
+Do not orchestrate long flows such as SSH sessions, batch queues, or remote GPU jobs with `depends` alone.
 
-- 지속성이 필요하면 외부 queue 또는 job runner를 사용
-- `mise` task는 submit/status/cancel entrypoint로 두기
-- 각 entrypoint에 `timeout`을 둔다
+- Use an external queue or job runner when persistence is needed
+- Keep `mise` tasks as submit/status/cancel entry points
+- Give each entry point a `timeout`
 
-## Review 질문
+## Review Questions
 
-- hidden helper와 user-facing task가 분리되어 있는가
-- CI, build, release 흐름이 artifact 기준으로 읽히는가
-- `sources`, `outputs` 또는 `skip_if`로 불필요한 재실행을 줄였는가
-- long-running workflow가 shell session 생명주기에 묶여 있지 않은가
+- Are hidden helpers and user-facing tasks separated?
+- Do CI, build, and release flows read in terms of artifacts?
+- Did `sources`, `outputs`, or `skip_if` cut needless reruns?
+- Is no long-running workflow tied to the lifetime of a shell session?

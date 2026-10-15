@@ -1,16 +1,16 @@
 # Profile Catalog Shortcut
 
-- 자세한 canonical 목록은 `../../../references/profile-catalog.md`를 읽는다.
-- 이 로컬 문서는 profile 이름을 빠르게 확인할 때만 사용한다.
-- listed profile은 대표 starter set이지 전체 지원 범위를 닫아두는 목록이 아니다.
+- Read `../../../references/profile-catalog.md` for the full canonical list.
+- Use this local document only to look up profile names quickly.
+- The listed profiles are a starter set, not a closed list of what is supported.
 
 ## Names
 
-- `python-uv-app`: 일반 Python 애플리케이션
-- `python-uv-lib`: package build/publish 중심 Python 라이브러리
-- `java-gradle-app`: 일반 Java 애플리케이션
-- `java-spring-service`: Spring 기반 서비스
+- `python-uv-app`: general Python applications
+- `python-uv-lib`: Python libraries centered on package build and publish
+- `java-gradle-app`: general Java applications
+- `java-spring-service`: Spring-based services
 
-선택 신호는 `../../../references/profile-composition.md`를 읽는다.
-구체 예제는 `../../../references/profile-examples.md`를 읽는다.
-세부 selector/runtime/build 관례는 `../../../references/ecosystems/` 아래 문서를 읽는다.
+For selection signals, read `../../../references/profile-composition.md`.
+For concrete examples, read `../../../references/profile-examples.md`.
+For detailed selector, runtime, and build conventions, read the documents under `../../../references/ecosystems/`.

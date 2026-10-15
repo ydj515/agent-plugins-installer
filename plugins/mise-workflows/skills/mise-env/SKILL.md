@@ -44,8 +44,8 @@ Do not use this skill for tool selection, task composition, or runtime-specific 
 
 ## Example Requests
 
-- "이 저장소의 `[env]` 구성을 정리해줘."
-- "local config가 추적되지 않게 만들고 싶어."
-- "deprecated env 패턴이나 Tera v1 문법이 있는지 찾아줘."
-- "uv 프로젝트에서 `.venv`를 `mise` 기준으로 자동 활성화하게 해줘."
-- "secret을 SOPS로 관리할지 fnox로 관리할지 골라줘."
+- "Clean up this repository's `[env]` setup."
+- "Keep local config out of version control."
+- "Find deprecated env patterns or Tera v1 syntax."
+- "Auto-activate `.venv` through `mise` in a uv project."
+- "Choose between SOPS and fnox for secrets."

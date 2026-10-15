@@ -1,50 +1,50 @@
 # Env Patterns
 
-## 목적
+## Purpose
 
-이 문서는 `mise`의 `[env]`를 실제 프로젝트에서 사용할 때 반복되는 구현 패턴을 정리한다.
+This document collects the implementation patterns that recur when using `mise` `[env]` in real projects.
 
 ## Single Source of Truth
 
-- 비밀값이 아닌 설정값은 가능하면 `[env]`를 단일 진입점으로 둔다.
-- 애플리케이션 코드는 항상 기본값을 가져야 하며, `mise`가 없어도 동작해야 한다.
-- `mise`는 설정 주입 계층이고, 애플리케이션은 그 값을 소비하는 계층이다.
+- Use `[env]` as the single entry point for non-secret settings where possible.
+- Application code always has defaults and works without `mise`.
+- `mise` is the configuration injection layer; the application is the layer that consumes the values.
 
-## Python 가상환경
+## Python Virtualenvs
 
-두 방식 중 하나만 고른다.
+Pick exactly one of the two mechanisms.
 
-| 방식 | 대상 | 위치 |
+| Mechanism | Use for | Location |
 | --- | --- | --- |
-| `_.python.venv` | uv를 쓰지 않는 프로젝트 | `[env]` |
-| `python.uv_venv_auto` | `uv.lock`이 있는 uv 프로젝트 | `[settings]` |
+| `_.python.venv` | Projects that do not use uv | `[env]` |
+| `python.uv_venv_auto` | uv projects with a `uv.lock` | `[settings]` |
 
-uv를 쓰지 않는 프로젝트:
+Projects without uv:
 
 ```toml
 [env]
 _.python.venv = { path = ".venv", create = true }
 ```
 
-uv 프로젝트:
+uv projects:
 
 ```toml
 [settings]
 python.uv_venv_auto = "create|source"
 ```
 
-- `"source"`는 uv가 만든 venv를 활성화만 하고, `"create|source"`는 없으면 만든다.
-- `python.uv_venv_auto = true`는 2026.7.0부터 경고하며 2027.7.0에서 제거된다.
-- Python tool option의 `virtualenv`도 deprecated다. `_.python.venv`로 옮긴다.
+- `"source"` only activates the venv uv created; `"create|source"` also creates it when missing.
+- `python.uv_venv_auto = true` warns since 2026.7.0 and is removed in 2027.7.0.
+- The Python `virtualenv` tool option is deprecated too. Move it to `_.python.venv`.
 
 ## Special Directives
 
-- `_.file`: `.env`, `.json`, `.yaml`, `.toml` 파일을 로드한다. 없는 파일은 오류 없이 건너뛴다.
-- `_.path`: `bin`, `node_modules/.bin` 같은 실행 경로를 확장한다.
-- `_.source`: bash 스크립트를 source 해서 환경을 계산한다.
-- `_.python.venv`: Python 가상환경을 만들고 활성화한다.
+- `_.file`: loads `.env`, `.json`, `.yaml`, or `.toml` files. Missing files are skipped without an error.
+- `_.path`: extends PATH with directories such as `bin` and `node_modules/.bin`.
+- `_.source`: sources a bash script to compute the environment.
+- `_.python.venv`: creates and activates a Python virtualenv.
 
-예시:
+Example:
 
 ```toml
 [env]
@@ -53,37 +53,37 @@ _.path = ["bin", "node_modules/.bin"]
 _.source = { path = "./scripts/dev-env.sh", redact = true }
 ```
 
-## Tera v2 템플릿
+## Tera v2 Templates
 
-mise는 Tera v2로 template을 렌더링한다.
+mise renders templates with Tera v2.
 
-- 표현식: `{{ ... }}`
-- 제어문: `{% ... %}`
-- 주석: `{# ... #}`
+- Expressions: `{{ ... }}`
+- Statements: `{% ... %}`
+- Comments: `{# ... #}`
 
-자주 쓰는 값:
+Common values:
 
-- `config_root`: 프로젝트 디렉터리. 하위 디렉터리에서 실행해도 고정된다
-- `cwd`: mise를 실행한 디렉터리
+- `config_root`: the project directory. It stays fixed when you run from a subdirectory
+- `cwd`: the directory mise runs in
 - `env.VAR`
-- `tools.<name>.version`, `tools.<name>.path` (`tools = true` 필요)
+- `tools.<name>.version`, `tools.<name>.path` (requires `tools = true`)
 - `xdg_cache_home`, `xdg_config_home`
 
-자주 쓰는 함수/필터:
+Common functions and filters:
 
-- `read_file(path=...)`: 상대 경로는 template이 있는 config 디렉터리 기준
-- `env.NAME | default(value="...")`: `get_env()`보다 우선한다. `get_env()`는 `[env]` 값을 보지 못한다
+- `read_file(path=...)`: relative paths resolve from the directory of the config that holds the template
+- `env.NAME | default(value="...")`: prefer this over `get_env()`. `get_env()` cannot see `[env]` values
 - `hash_file`, `snakecase`, `trim`, `trim_start(pat=...)`, `absolute`, `basename`
 
-Tera v1에서 v2로 바뀐 부분:
+Changes from Tera v1 to v2:
 
 - `trim_start_matches` → `trim_start`, `trim_end_matches` → `trim_end`
 - `as_str` → `str`, `escape` → `escape_html`
 - `slice(...)` → `items[0:2]`, `map(attribute=...)` → `[item.name for item in items]`
-- v2는 정의되지 않은 변수에서 실패한다. `default` filter로 방어한다
-- v1 helper는 2026.10.0부터 경고하고 2027.4.0에서 제거된다
+- v2 fails on undefined variables. Guard them with the `default` filter
+- v1 helpers warn since 2026.10.0 and are removed in 2027.4.0
 
-정적인 파일 값을 읽을 때는 `read_file`을 우선한다. `exec()`는 렌더링할 때마다 실행되므로 꼭 필요할 때만 `cache_key`, `cache_duration`과 함께 쓴다.
+Prefer `read_file` for static file values. `exec()` runs on every render, so use it only when needed and with `cache_key` and `cache_duration`.
 
 ## Required / Default / Redact / tools = true
 
@@ -93,18 +93,18 @@ redactions = ["*_TOKEN", "*_KEY", "PASSWORD"]
 [env]
 NODE_ENV = { default = "development" }
 DATABASE_URL = { required = true }
-API_KEY = { required = "사내 비밀 저장소에서 발급 후 mise.local.toml에 설정" }
+API_KEY = { required = "Request a key from the internal secret store and set it in mise.local.toml" }
 _.file = { path = ".env.secrets", redact = true }
 GEM_BIN = { value = "{{ env.GEM_HOME }}/bin", tools = true }
 ```
 
-- `redactions`는 `[env]` 밖, 파일 최상단의 top-level 키다. `[env]` 안에 두면 일반 변수로 취급된다.
-- `required`는 값이 없을 때 `mise exec`, `mise run`, `mise env`를 멈춘다. 활성화된 shell에서는 경고만 한다.
-- `default`는 이미 값이 있으면 덮어쓰지 않는다.
-- `redact`는 task 출력과 CI 로그 노출을 줄인다. `raw = true` task는 마스킹하지 않는다.
-- `tools = true`는 tool 설치 이후 값을 계산해야 할 때만 사용한다.
+- `redactions` is a top-level key placed above `[env]`. Inside `[env]` it is treated as an ordinary variable.
+- `required` stops `mise exec`, `mise run`, and `mise env` when the value is missing. An activated shell only warns.
+- `default` does not overwrite an existing value.
+- `redact` reduces exposure in task output and CI logs. `raw = true` tasks are not masked.
+- Use `tools = true` only when a value must be computed after tools are installed.
 
-## 애플리케이션 기본값 패턴
+## Application Default Pattern
 
 Python:
 
@@ -120,28 +120,28 @@ Bash:
 timeout_seconds="${APP_TIMEOUT_SECONDS:-30}"
 ```
 
-핵심은 `mise`가 없어도 동일한 코드 경로가 유지되어야 한다는 점이다.
+The point is that the same code path works without `mise`.
 
 ## Config Environments
 
-- `MISE_ENV=dev`이면 `mise.dev.toml`, `mise.dev.local.toml`이 추가로 로드된다.
-- 환경별 lockfile(`mise.dev.lock`)은 해당 환경 config가 선언한 도구만 담는다.
-- 환경 기본값은 `.miserc.toml`에 둘 수 있다. `.miserc.toml`은 trust가 필요 없지만 `exec()`, `read_file()`을 쓸 수 없다.
+- With `MISE_ENV=dev`, `mise.dev.toml` and `mise.dev.local.toml` are loaded as well.
+- An environment lockfile (`mise.dev.lock`) holds only the tools that environment's config declares.
+- The default environment can live in `.miserc.toml`. `.miserc.toml` needs no trust but cannot use `exec()` or `read_file()`.
 
-## 언제 Tasks로 넘길지
+## When to Hand Off to Tasks
 
-다음 신호가 보이면 `mise-tasks`로 handoff한다.
+Hand off to `mise-tasks` when you see these signals:
 
-- 여러 단계가 순서를 가진다
-- 재실행 가능한 workflow가 필요하다
-- build/test/release가 DAG로 표현되어야 한다
-- file tracking이나 watch가 필요하다
+- Several steps run in order
+- The workflow must be rerunnable
+- build/test/release should be expressed as a DAG
+- File tracking or watch mode is needed
 
-## 검토 질문
+## Review Questions
 
-- `[env]`가 비밀값 아닌 설정의 단일 진입점 역할을 하는가
-- 기본값이 있어 `mise` 없이도 코드가 실행되는가
-- `_.python.venv`와 `python.uv_venv_auto` 중 하나만 선택했는가
-- `redactions`가 top-level에 있는가
-- Tera v1 helper나 정의되지 않은 변수 참조가 남아 있지 않은가
-- `exec()` 없이 더 단순한 template 표현이 가능한가
+- Does `[env]` act as the single entry point for non-secret settings?
+- Does the code run without `mise` thanks to defaults?
+- Is exactly one of `_.python.venv` and `python.uv_venv_auto` chosen?
+- Is `redactions` at the top level?
+- Are there no Tera v1 helpers or undefined variable references left?
+- Is there a simpler template expression than `exec()`?

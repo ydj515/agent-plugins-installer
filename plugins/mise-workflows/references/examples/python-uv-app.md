@@ -1,17 +1,17 @@
 # python-uv-app
 
-## 언제 쓰는가
+## When to Use
 
-- 일반 Python 애플리케이션
-- `pyproject.toml`과 `uv.lock`을 함께 관리하는 저장소
-- 로컬 `.venv` 자동 생성과 `uv sync` workflow가 필요한 경우
+- General Python applications
+- Repositories that manage `pyproject.toml` and `uv.lock` together
+- When automatic local `.venv` creation and a `uv sync` workflow are needed
 
-## selector 기준
+## Selectors
 
 - Python runtime: `3.14`
 - uv: `0.13`
 
-2026-10-16 기준 exact candidate는 다음이었다.
+The exact candidates on 2026-10-16 were:
 
 - `mise latest python@3.14` -> `3.14.8`
 - `mise latest uv@0.13` -> `0.13.1`
@@ -78,9 +78,9 @@ run = "echo ci passed"
 
 ## Notes
 
-- `min_version`은 `python.uv_venv_auto = "create|source"` 형식을 지원하는 버전 이상으로 둔다.
-- `_.python.venv`는 함께 쓰지 않는다. uv 프로젝트는 `python.uv_venv_auto` 하나로 venv를 관리한다.
-- request는 사람이 읽기 쉬운 범위를 적고, patch resolution은 `mise.lock`에 맡긴다. `mise.lock`은 커밋한다.
-- `uv sync --frozen`을 쓰려면 `uv.lock`이 저장소에 있어야 한다.
-- `install`은 `sources`, `outputs`로 의존성이 바뀌지 않으면 건너뛴다.
-- package publishing 저장소라면 `python-uv-lib`와 release task 패턴을 같이 검토한다.
+- Set `min_version` to a release that supports the `python.uv_venv_auto = "create|source"` form.
+- Do not add `_.python.venv` as well. uv projects manage the venv with `python.uv_venv_auto` alone.
+- Requests stay human-readable ranges and patch resolution is left to `mise.lock`. Commit `mise.lock`.
+- `uv sync --frozen` requires `uv.lock` in the repository.
+- `install` is skipped through `sources` and `outputs` when dependencies have not changed.
+- For package publishing repositories, review `python-uv-lib` and the release task patterns as well.

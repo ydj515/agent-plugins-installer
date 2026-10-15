@@ -11,53 +11,53 @@
 - `MWJ*`: Java selector and vendor policy rules
 - `MWP*`: profile inference rules
 
-## 현재 구현된 규칙
+## Implemented Rules
 
-| Rule | Severity | Owner | 검사 내용 |
+| Rule | Severity | Owner | Checks |
 | --- | --- | --- | --- |
-| `PARSE001` | error | `mise-review` | TOML parse 실패 |
-| `MWC001` | warning | `mise-tools` | `ubi:` backend (2027.1.0 제거) |
+| `PARSE001` | error | `mise-review` | TOML parse failure |
+| `MWC001` | warning | `mise-tools` | `ubi:` backend (removed in 2027.1.0) |
 | `MWC002` | warning | `mise-tools` | `asdf:` backend |
-| `MWC003` | warning | `mise-tools` | `[alias]`, `experimental_monorepo_root` 같은 deprecated top-level 키 |
-| `MWE001` | error | `mise-env` | top-level `env_file`, `dotenv`, `env_path` |
-| `MWE002` | warning | `mise-env` | local config/lockfile이 `.gitignore`에 없음 |
-| `MWE003` | warning | `mise-env` | `env.mise.*` (2026.12.0 제거) |
-| `MWE004` | error | `mise-env` | `[env]` 안의 `redactions` |
+| `MWC003` | warning | `mise-tools` | Deprecated top-level keys such as `[alias]` and `experimental_monorepo_root` |
+| `MWE001` | error | `mise-env` | Top-level `env_file`, `dotenv`, `env_path` |
+| `MWE002` | warning | `mise-env` | Local config or lockfile missing from `.gitignore` |
+| `MWE003` | warning | `mise-env` | `env.mise.*` (removed in 2026.12.0) |
+| `MWE004` | error | `mise-env` | `redactions` inside `[env]` |
 | `MWE005` | warning | `mise-env` | `python.uv_venv_auto = true` |
-| `MWE006` | warning | `mise-env` | `_.python.venv`와 `python.uv_venv_auto` 동시 사용 |
+| `MWE006` | warning | `mise-env` | `_.python.venv` and `python.uv_venv_auto` used together |
 | `MWE007` | warning | `mise-env` | Python `virtualenv` tool option |
-| `MWT001` | warning | `mise-tasks` | Tera `arg()`, `option()`, `flag()` (2027.5.0 제거) |
-| `MWT002` | policy-error | `mise-tasks` | task에 `description`, `usage`(`about` 포함), `run`(또는 `file`) 중 누락 |
-| `MWV002` | policy-error | `mise-policy` | tracked config의 `latest` |
-| `MWV003` | warning | `mise-policy` | prerelease로 보이는 request |
-| `MWV004` | error | `mise-tools` | `^24`, `>=20` 같은 npm 스타일 range |
-| `MWV005` | warning | `mise-policy` | deprecated `install_before` |
-| `MWL001` | info | `mise-lock` | 도구가 있는데 `mise.lock`이 없음 |
-| `MWL002` | error | `mise-lock` | `lockfile = false`와 `locked = true` 동시 사용 |
-| `MWJ001` | policy-error | `mise-tools` | vendor 없는 Java request (`21`, `lts`) |
-| `MWP001` | error | `mise-profiles` | `python-uv-app` 신호인데 `python`, `uv` 누락 |
-| `MWP002` | error | `mise-profiles` | `java-gradle-app` 신호인데 `java`, `gradle` 누락 |
-| `MWP003` | error | `mise-profiles` | `java-spring-service` 신호인데 `java`, `gradle` 누락 |
+| `MWT001` | warning | `mise-tasks` | Tera `arg()`, `option()`, `flag()` (removed in 2027.5.0) |
+| `MWT002` | policy-error | `mise-tasks` | Task missing `description`, `usage` (with `about`), or `run` (or `file`) |
+| `MWV002` | policy-error | `mise-policy` | `latest` in tracked config |
+| `MWV003` | warning | `mise-policy` | Request that looks like a prerelease |
+| `MWV004` | error | `mise-tools` | npm-style ranges such as `^24` or `>=20` |
+| `MWV005` | warning | `mise-policy` | Deprecated `install_before` |
+| `MWL001` | info | `mise-lock` | Tools declared but no `mise.lock` |
+| `MWL002` | error | `mise-lock` | `lockfile = false` combined with `locked = true` |
+| `MWJ001` | policy-error | `mise-tools` | Java request without a vendor (`21`, `lts`) |
+| `MWP001` | error | `mise-profiles` | `python-uv-app` signals but `python` or `uv` missing |
+| `MWP002` | error | `mise-profiles` | `java-gradle-app` signals but `java` or `gradle` missing |
+| `MWP003` | error | `mise-profiles` | `java-spring-service` signals but `java` or `gradle` missing |
 
-## 검사 대상 파일
+## Files Checked
 
 - `mise.toml`, `mise.*.toml`, `.mise.toml`, `.mise.*.toml`
 - `.config/mise.toml`, `.config/mise/config.toml`, `mise/config.toml`, `.mise/config.toml`
-- `conf.d/*.toml` fragment (`.config/mise/conf.d`, `mise/conf.d`, `.mise/conf.d`)
-- `.gitignore`, `mise.lock`, profile 신호 파일(`pyproject.toml`, `uv.lock`, `build.gradle*`, Spring 신호)
+- `conf.d/*.toml` fragments (`.config/mise/conf.d`, `mise/conf.d`, `.mise/conf.d`)
+- `.gitignore`, `mise.lock`, and profile signal files (`pyproject.toml`, `uv.lock`, `build.gradle*`, Spring signals)
 
-## 공식 검사와 함께 쓰기
+## Use With Official Checks
 
-validator는 조직 정책과 deprecation을 검사한다. mise 자체 검사도 함께 실행한다.
+The validator checks organization policy and deprecations. Run mise's own checks as well.
 
-- `mise tasks validate`: 순환 의존, 없는 task 참조, `usage` parse 오류, 잘못된 `timeout`
-- `mise doctor`: mise 설치 상태
-- `mise doctor project`: 프로젝트가 선언한 `[doctor.checks]`
+- `mise tasks validate`: dependency cycles, references to missing tasks, `usage` parse errors, invalid `timeout`
+- `mise doctor`: the mise installation
+- `mise doctor project`: the `[doctor.checks]` the project declares
 
-## 출력 기대치
+## Output Expectations
 
-- JSON과 human-readable 모두 지원
-- error 또는 policy-error가 있으면 exit code 1
-- 각 진단은 `owner_skill`, `why`, `fix_hint`, `docs`, `evidence`를 포함
-- `fix_hint`는 짧고 실행 가능해야 함
-- 관련 ecosystem reference가 있다면 `docs`에 함께 준다
+- Support both JSON and human-readable output
+- Exit code 1 when there is an error or policy-error
+- Each diagnostic includes `owner_skill`, `why`, `fix_hint`, `docs`, and `evidence`
+- `fix_hint` is short and actionable
+- Include related ecosystem references in `docs` when relevant

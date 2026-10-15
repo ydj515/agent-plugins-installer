@@ -41,7 +41,7 @@ Do not use this skill to choose tool versions (`mise-tools`) or to design the lo
 
 ## Example Requests
 
-- "GitHub Actions에서 mise로 도구를 설치하게 바꿔줘."
-- "CI cache를 lockfile 기준으로 안전하게 바꿔줘."
-- "fork PR에서 mise config가 코드를 실행하지 않게 하고 싶어."
-- "Dockerfile에서 mise 도구를 설치하는 단계를 정리해줘."
+- "Make GitHub Actions install tools with mise."
+- "Make the CI cache safe based on the lockfile."
+- "Stop mise config from running code on fork PRs."
+- "Clean up the steps that install mise tools in the Dockerfile."

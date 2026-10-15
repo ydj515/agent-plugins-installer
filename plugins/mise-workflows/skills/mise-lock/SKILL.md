@@ -31,7 +31,7 @@ Do not use this skill for choosing version requests (`mise-tools`) or CI wiring 
 
 ## Workflow
 
-1. Inspect `mise.toml`, `mise.*.toml`, existing `mise*.lock` files, `.mise/locks` 디렉터리, and `.gitignore`.
+1. Inspect `mise.toml`, `mise.*.toml`, existing `mise*.lock` files, the `.mise/locks` directory, and `.gitignore`.
 2. Confirm the tools to lock are declared in `mise.toml`, not only in `.tool-versions`.
 3. Enable or create the lockfile and add every platform used by developers, CI, and images.
 4. Ignore local lockfiles and their sidecars; commit shared lockfiles and sidecars.
@@ -40,7 +40,7 @@ Do not use this skill for choosing version requests (`mise-tools`) or CI wiring 
 
 ## Example Requests
 
-- "이 저장소에 `mise.lock`을 도입해줘."
-- "CI가 쓰는 linux 플랫폼 entry를 lockfile에 추가해줘."
-- "lockfile bump를 자동화하는 안전한 방법을 알려줘."
-- "checksum mismatch가 났는데 어떻게 처리해야 해?"
+- "Introduce `mise.lock` to this repository."
+- "Add the Linux platform entries CI uses to the lockfile."
+- "Show a safe way to automate lockfile bumps."
+- "How should I handle a checksum mismatch?"

@@ -1,16 +1,16 @@
-# Rules
+# Review Contract
 
-## 핵심 출력
+## Core Output
 
 - rule id
 - severity
 - owner skill
 - why
 - fix hint
-- docs 또는 다음에 읽을 ecosystem reference
+- docs, or the ecosystem reference to read next
 - evidence
 
-## rule family
+## Rule Families
 
 - `PARSE*`: TOML parse
 - `MWC*`: tools/config
@@ -21,12 +21,12 @@
 - `MWJ*`: Java selector/vendor policy
 - `MWP*`: profiles
 
-전체 규칙 목록은 `../../../references/rules.md`를 읽는다.
+For the full rule list, read `../../../references/rules.md`.
 
-## 리뷰 순서
+## Review Order
 
-1. validator를 실행한다.
-2. `mise tasks validate`를 함께 실행한다.
-3. error와 policy-error를 먼저 정리하고 owner skill로 넘긴다.
-4. warning은 제거 예정 버전과 함께 보고한다.
-5. info는 권장 사항으로 묶어 보고한다.
+1. Run the validator.
+2. Run `mise tasks validate` as well.
+3. Resolve errors and policy-errors first and hand them to the owner skill.
+4. Report warnings together with their removal version.
+5. Group info diagnostics as recommendations.

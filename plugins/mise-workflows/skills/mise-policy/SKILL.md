@@ -38,7 +38,7 @@ Do not use this skill to define Java vendor syntax, Gradle floor details, or fra
 
 ## Example Requests
 
-- "공통 version policy를 정리해줘."
-- "이 규칙이 warning인지 policy-error인지 정해줘."
-- "`minimum_release_age`를 7일로 올리고 보안 도구만 예외로 두고 싶어."
-- "`latest`를 금지하는 shared rule을 만들고 싶어."
+- "Write up the shared version policy."
+- "Decide whether this rule is a warning or a policy-error."
+- "Raise `minimum_release_age` to 7 days and exempt only security tools."
+- "Create a shared rule that bans `latest`."

@@ -1,21 +1,21 @@
 # Python UV
 
-## 역할
+## Role
 
-- uv selector, venv 활성화, lock workflow, package build/publish 흐름을 다룬다.
-- Python runtime 선택은 별도 문서와 조합해서 본다.
-- app와 lib의 차이는 example 문서에서 concrete하게 본다.
+- Covers the uv selector, venv activation, lock workflow, and package build/publish flow.
+- Python runtime selection is read together with a separate document.
+- The difference between apps and libraries is shown concretely in the example documents.
 
-## 기본 원칙
+## Principles
 
-- uv selector floor는 shared policy와 profile 맥락 안에서 판단한다.
-- Python runtime floor는 `references/ecosystems/python-runtime.md`와 함께 본다.
-- `pyproject.toml`, `uv.lock`(애플리케이션 의존성)과 `mise.lock`(도구 버전)을 분리해서 설명한다.
-- workspace라면 `.venv`와 dev dependency를 root 기준으로 본다.
+- Decide the uv selector floor within shared policy and the profile context.
+- Read the Python runtime floor together with `references/ecosystems/python-runtime.md`.
+- Explain `pyproject.toml` and `uv.lock` (application dependencies) separately from `mise.lock` (tool versions).
+- In a workspace, treat `.venv` and dev dependencies from the root.
 
-## venv 활성화
+## Venv Activation
 
-uv 프로젝트는 `_.python.venv` 대신 `python.uv_venv_auto`를 쓴다.
+uv projects use `python.uv_venv_auto` instead of `_.python.venv`.
 
 ```toml
 [tools]
@@ -29,33 +29,33 @@ python.uv_venv_auto = "create|source"
 UV_PYTHON = { value = "{{ tools.python.path }}", tools = true }
 ```
 
-- `"create|source"`: 가장 가까운 `uv.lock` 옆 `.venv`가 없으면 uv로 만들고 활성화한다.
-- `"source"`: 활성화만 한다. venv가 없으면 `uv sync`를 하라는 경고가 난다.
-- `uv.lock`이 없으면 이 setting은 아무 일도 하지 않는다.
-- `UV_PYTHON`을 mise interpreter 경로로 두면 uv가 자체적으로 내려받은 Python 대신 mise가 고른 Python을 쓴다.
-- `python.uv_venv_auto = true`는 deprecated(2027.7.0 제거)다. `true`는 `UV_PYTHON`에 버전 번호만 넣었으므로 위 패턴으로 대체한다.
-- `UV_PROJECT_ENVIRONMENT`로 venv 경로를 바꿀 수 있다.
+- `"create|source"`: when the `.venv` next to the nearest `uv.lock` is missing, uv creates it, then mise activates it.
+- `"source"`: only activates. Without a venv, mise warns that you should run `uv sync`.
+- Without a `uv.lock`, the setting does nothing.
+- Setting `UV_PYTHON` to mise's interpreter path makes uv use the Python mise selected instead of one it downloaded itself.
+- `python.uv_venv_auto = true` is deprecated (removed in 2027.7.0). `true` exported only the version number in `UV_PYTHON`, so replace it with the pattern above.
+- `UV_PROJECT_ENVIRONMENT` changes the venv path.
 
-## 기본 정책
+## Default Policy
 
-- 신규 프로젝트 추천 selector: `0.13`
-- uv는 0.x 단계라 minor가 바뀔 때 동작이 달라질 수 있으므로 minor까지 적는다
-- 2026-10-16 기준 후보: `mise latest uv@0.13` → `0.13.1`
-- registry의 `uv`는 `aqua:astral-sh/uv` backend를 쓴다
+- Recommended selector for new projects: `0.13`
+- uv is still 0.x and behavior can change between minors, so write the minor
+- Candidate as of 2026-10-16: `mise latest uv@0.13` → `0.13.1`
+- The registry's `uv` uses the `aqua:astral-sh/uv` backend
 
-## uv로 설치하는 CLI 도구
+## CLI Tools Installed with uv
 
-ruff, black 같은 Python CLI를 프로젝트 의존성이 아니라 도구로 관리하려면 `pypi:` backend를 쓴다(`pipx:`는 alias). registry short name이 있으면(`ruff`) 그쪽을 먼저 쓴다. lockfile format 2부터 `pypi:` 도구의 의존성 그래프가 `uv.lock` sidecar로 고정된다(uv 0.12.10 이상).
+To manage Python CLIs such as ruff or black as tools rather than project dependencies, use the `pypi:` backend (`pipx:` is an alias). Use the registry short name first when one exists (`ruff`). From lockfile format 2, the dependency graph of `pypi:` tools is pinned in a `uv.lock` sidecar (uv 0.12.10 or newer).
 
-## 점검 질문
+## Review Questions
 
-- profile이 실제로 uv를 요구하는가
-- selector 후보가 `mise ls-remote uv` 또는 `mise latest uv@<selector>` 결과와 맞는가
-- `_.python.venv`와 `python.uv_venv_auto`를 동시에 쓰지 않는가
-- app/dev workflow인지, build/publish workflow인지 구분했는가
+- Does the profile actually require uv?
+- Does the selector candidate match `mise ls-remote uv` or `mise latest uv@<selector>` output?
+- Are `_.python.venv` and `python.uv_venv_auto` not used together?
+- Did you distinguish an app/dev workflow from a build/publish workflow?
 
-## 같이 볼 문서
+## Read Together With
 
-- Python runtime 정책: `references/ecosystems/python-runtime.md`
+- Python runtime policy: `references/ecosystems/python-runtime.md`
 - Python app starter: `references/examples/python-uv-app.md`
 - Python lib starter: `references/examples/python-uv-lib.md`

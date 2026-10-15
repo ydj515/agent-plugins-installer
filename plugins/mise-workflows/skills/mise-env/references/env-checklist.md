@@ -1,22 +1,22 @@
 # Env Execution Checklist
 
-## 먼저 읽을 문서
+## Read First
 
 - `../../../references/env-core.md`
 - `../../../references/policy-core.md`
 - `../../../references/env-patterns.md`
-- 필요 시 `../../../references/secrets.md`
-- 필요 시 `../../../references/hub-spoke-architecture.md`
-- 필요 시 `../../../references/github-tokens.md`
+- When needed, `../../../references/secrets.md`
+- When needed, `../../../references/hub-spoke-architecture.md`
+- When needed, `../../../references/github-tokens.md`
 
-## 점검 순서
+## Check Order
 
-1. tracked env와 local env(`mise.local.toml`, `mise.<env>.local.toml`)를 분리한다.
-2. deprecated 문법(`env_file`, `dotenv`, `env_path`, `env.mise.*`, directive table의 `value`)이 있는지 본다.
-3. `redactions`가 top-level에 있는지 확인한다.
-4. Tera v1 helper와 정의되지 않은 변수 참조를 찾는다.
-5. Python venv 방식이 하나만 선택되었는지 확인한다.
-6. script가 기본값을 가져 `mise` 없이도 동작하는지 본다.
-7. `.gitignore`와 local config/lockfile tracking 상태를 확인한다.
-8. `required`, `default`, `redact`의 의미를 실제 출력 흐름과 맞춘다.
-9. multi-step workflow 신호가 보이면 `mise-tasks`로 넘긴다.
+1. Separate tracked env from local env (`mise.local.toml`, `mise.<env>.local.toml`).
+2. Look for deprecated syntax (`env_file`, `dotenv`, `env_path`, `env.mise.*`, `value` in directive tables).
+3. Confirm `redactions` is at the top level.
+4. Look for Tera v1 helpers and references to undefined variables.
+5. Confirm exactly one Python venv mechanism is chosen.
+6. Check that scripts have defaults and work without `mise`.
+7. Check `.gitignore` and the tracking state of local config and lockfiles.
+8. Align the meaning of `required`, `default`, and `redact` with the real output flow.
+9. Hand off to `mise-tasks` when multi-step workflow signals appear.

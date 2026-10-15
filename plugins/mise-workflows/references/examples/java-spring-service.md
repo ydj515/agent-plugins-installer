@@ -1,22 +1,22 @@
 # java-spring-service
 
-## 언제 쓰는가
+## When to Use
 
-- Spring Boot 서비스
-- `build.gradle*`, `gradlew`, `application.yml`, `@SpringBootApplication` 신호가 있는 저장소
-- Java/Gradle 기본 규칙 위에 service-oriented env/task가 필요한 경우
+- Spring Boot services
+- Repositories with `build.gradle*`, `gradlew`, `application.yml`, or `@SpringBootApplication` signals
+- When service-oriented env and tasks are needed on top of the Java/Gradle rules
 
-## selector 기준
+## Selectors
 
 - Java runtime: `zulu-25`
 - Gradle: `9.8`
 
-2026-10-16 기준 exact candidate는 다음이었다.
+The exact candidates on 2026-10-16 were:
 
 - `mise latest java@zulu-25` -> `zulu-25.36.205.0`
 - `mise latest gradle@9.8` -> `9.8.1`
 
-사용하는 Spring Boot 버전이 Java 25를 지원하지 않으면 `zulu-21`을 유지한다.
+Keep `zulu-21` if your Spring Boot version does not support Java 25.
 
 ## Example `mise.toml`
 
@@ -58,7 +58,7 @@ outputs = ["build/libs"]
 run = "./gradlew bootJar"
 ```
 
-`mise.local.toml` (커밋하지 않음):
+`mise.local.toml` (not committed):
 
 ```toml
 [env]
@@ -68,7 +68,7 @@ SPRING_DATASOURCE_PASSWORD = { value = "local-only", redact = true }
 
 ## Notes
 
-- `required`를 `boot` task의 `env`에만 둬서, 접속 정보가 필요 없는 `test`나 CI는 영향을 받지 않게 한다. 별도 `_verify-env` helper task가 필요 없다.
-- local DB credentials나 secret은 tracked config 대신 `mise.local.toml`, SOPS 파일, 또는 redacted file loading으로 분리한다.
-- `bootRun`과 package lifecycle을 분리해 dev flow와 release flow를 읽기 쉽게 유지한다.
-- Spring 특화 규칙은 `references/ecosystems/spring-service.md`, runtime/build 규칙은 각각 `references/ecosystems/java-runtime.md`, `references/ecosystems/java-gradle.md`를 본다.
+- `required` sits only in the `boot` task's `env`, so `test` and CI, which do not need connection settings, are unaffected. No separate `_verify-env` helper task is needed.
+- Keep local database credentials and secrets out of tracked config, in `mise.local.toml`, SOPS files, or redacted file loading.
+- Keep `bootRun` separate from the package lifecycle so dev and release flows stay readable.
+- For Spring-specific rules see `references/ecosystems/spring-service.md`; for runtime and build rules see `references/ecosystems/java-runtime.md` and `references/ecosystems/java-gradle.md`.

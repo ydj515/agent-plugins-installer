@@ -61,8 +61,8 @@ run = 'uv run pytest ${usage_filter:+-k "$usage_filter"}'
 
 ## Example Requests
 
-- "이 프로젝트의 mise task를 정리해줘."
-- "모든 task에 description, usage, run을 채워줘."
-- "file task comment가 안전한지 봐줘."
-- "monorepo task dependency를 `//path:task` 형식으로 바꾸고 싶어."
-- "release task DAG를 `mise` 기준으로 재구성해줘."
+- "Clean up this project's mise tasks."
+- "Fill in description, usage, and run for every task."
+- "Check whether the file task comments are safe."
+- "Switch monorepo task dependencies to the `//path:task` form."
+- "Rebuild the release task DAG around `mise`."

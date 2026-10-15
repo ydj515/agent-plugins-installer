@@ -48,6 +48,6 @@ Do not use this skill for `[env]`, `[tasks]`, language vendor policy, or framewo
 
 ## Example Requests
 
-- "이 프로젝트의 `[tools]`를 정리해줘."
-- "`ubi:`나 `asdf:` backend를 다른 backend로 옮겨줘."
-- "selector와 lock 전략을 같이 검토해줘."
+- "Clean up this project's `[tools]`."
+- "Move `ubi:` or `asdf:` backends to another backend."
+- "Review the selectors and lock strategy together."

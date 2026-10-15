@@ -1,10 +1,10 @@
 # Release Workflow Patterns
 
-## 목적
+## Purpose
 
-이 문서는 `mise` task로 release DAG를 설계할 때의 공통 패턴을 정리한다.
+This document collects the shared patterns for designing a release DAG with `mise` tasks.
 
-## 권장 DAG
+## Recommended DAG
 
 1. `release:preflight`
 2. `release:build`
@@ -12,20 +12,20 @@
 4. `release:publish`
 5. `release:full`
 
-핵심은 publish가 build artifact를 명시적으로 의존해야 한다는 점이다. 이름에 `:`가 있으므로 TOML 키는 따옴표로 감싼다.
+The key point is that publish must depend explicitly on the build artifact. The names contain `:`, so quote the TOML keys.
 
 ```toml
 [tasks."release:preflight"]
-description = "작업 디렉터리, 인증, 테스트 준비 상태를 검증한다."
+description = "Validate the working tree, credentials, and test readiness."
 usage = '''
-about "mise run release:preflight: 작업 디렉터리, 인증, 테스트 준비 상태를 검증한다"
+about "mise run release:preflight: validate the working tree, credentials, and test readiness"
 '''
 run = "./scripts/release-preflight.sh"
 
 [tasks."release:build"]
-description = "배포 가능한 artifact를 생성한다."
+description = "Build releasable artifacts."
 usage = '''
-about "mise run release:build: 배포 가능한 artifact를 생성한다"
+about "mise run release:build: build releasable artifacts"
 '''
 depends = ["release:preflight"]
 sources = ["src/**", "pyproject.toml"]
@@ -33,17 +33,17 @@ outputs = ["dist"]
 run = "./scripts/release-build.sh"
 
 [tasks."release:smoke"]
-description = "생성된 artifact를 설치해 기본 동작을 확인한다."
+description = "Install the built artifacts and check basic behavior."
 usage = '''
-about "mise run release:smoke: 생성된 artifact를 설치해 기본 동작을 확인한다"
+about "mise run release:smoke: install the built artifacts and check basic behavior"
 '''
 depends = ["release:build"]
 run = "./scripts/release-smoke.sh"
 
 [tasks."release:publish"]
-description = "검증된 artifact만 배포한다."
+description = "Publish only verified artifacts."
 usage = '''
-about "mise run release:publish: 검증된 artifact만 배포한다"
+about "mise run release:publish: publish only verified artifacts"
 '''
 depends = ["release:smoke"]
 confirm = "Publish the verified artifacts?"
@@ -51,37 +51,37 @@ timeout = "15m"
 run = "./scripts/release-publish.sh"
 
 [tasks."release:full"]
-description = "release workflow 전체를 실행한다."
+description = "Run the whole release workflow."
 usage = '''
-about "mise run release:full: release workflow 전체를 실행한다"
+about "mise run release:full: run the whole release workflow"
 '''
 depends = ["release:publish"]
 run = "echo release complete"
 ```
 
-- `confirm`은 대화형 확인을 요구한다. CI에서 실행한다면 `--yes` 정책을 따로 정한다.
-- publish credential은 `secrets`(experimental) 또는 CI secret으로 publish task에만 전달한다.
+- `confirm` asks for interactive confirmation. If CI runs it, decide a `--yes` policy separately.
+- Pass publish credentials only to the publish task, through `secrets` (experimental) or CI secrets.
 
-## 선택적 재실행
+## Selective Reruns
 
-build를 다시 실행하지 않고 publish만 재시도해야 한다면 guard task를 둔다.
+To retry only publish without rebuilding, add a guard task that checks:
 
-- artifact 존재 확인
-- 버전 bump 여부 확인
-- release credential 확인
+- that the artifacts exist
+- whether the version was bumped
+- the release credentials
 
-`sources`, `outputs`가 정확하면 build는 입력이 바뀌지 않는 한 자동으로 건너뛴다.
+With accurate `sources` and `outputs`, build is skipped automatically unless its inputs change.
 
-## 자주 보이는 문제
+## Common Problems
 
-- publish task가 build를 의존하지 않음
-- orchestrator가 실제 DAG를 실행하지 않고 안내 문구만 출력함
-- wheel, jar, binary가 서로 다른 경로에 흩어져 검증이 어려움
-- tool dependency가 빠져 release 단계에서 뒤늦게 실패함
-- `:`가 들어간 task 이름을 따옴표 없이 TOML 키로 써서 parse 오류가 남
+- The publish task does not depend on build
+- The orchestrator prints instructions instead of running the DAG
+- Wheels, jars, and binaries are scattered across paths, making validation hard
+- A missing tool dependency makes the release fail late
+- Task names with `:` are used as unquoted TOML keys and fail to parse
 
-## Review 질문
+## Review Questions
 
-- publish는 build artifact를 직접 보장하는가
-- selective rerun과 full orchestrator 둘 다 존재하는가
-- release에 필요한 외부 도구가 `[tools]` 또는 task `tools`에 선언되고 `mise.lock`에 기록되어 있는가
+- Does publish directly guarantee the build artifact?
+- Do both a selective rerun and a full orchestrator exist?
+- Are the external tools release needs declared in `[tools]` or the task's `tools` and recorded in `mise.lock`?

@@ -1,6 +1,6 @@
 # Tool Catalog
 
-## 공통 소유
+## Shared Ownership
 
 - `mise-tools`: generic `[tools]` structure, backend choice, request normalization
 - `mise-policy`: shared version gates and release age

@@ -39,7 +39,7 @@ Do not use this skill to define vendor syntax, build selector details, or valida
 
 ## Example Requests
 
-- "이 저장소에 어떤 mise profile이 맞는지 골라줘."
-- "Spring service면 어떤 skill 조합이 필요한지 보여줘."
-- "profile routing을 다시 정리해줘."
-- "profile별 예제 `mise.toml`을 보여줘."
+- "Pick the mise profile that fits this repository."
+- "Show which skills a Spring service needs."
+- "Rework the profile routing."
+- "Show the example `mise.toml` for each profile."

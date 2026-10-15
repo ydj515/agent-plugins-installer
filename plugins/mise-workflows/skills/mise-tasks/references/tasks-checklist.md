@@ -1,22 +1,22 @@
 # Tasks Execution Checklist
 
-## 먼저 읽을 문서
+## Read First
 
 - `../../../references/tasks-core.md`
 - `../../../references/anti-patterns.md`
 - `../../../references/task-arguments.md`
-- 필요 시 `../../../references/task-advanced.md`
-- release 흐름이면 `../../../references/release-workflow-patterns.md`
+- When needed, `../../../references/task-advanced.md`
+- For release flows, `../../../references/release-workflow-patterns.md`
 
-## 작성 순서
+## Authoring Order
 
-1. task 책임을 짧게 자른다.
-2. 모든 task에 `description`, `usage`(`about "mise run <task>: <동작>"` 포함), `run`을 지정한다.
-3. `[tools]`와 같은 버전을 쓰는 명령에서 `mise exec <tool>@<version> --`를 제거한다. 다른 버전이 필요한 task에만 남긴다.
-4. 인자가 있으면 `usage`에 `arg`, `flag`를 추가하고 script는 `usage_*` 변수로 읽는다.
-5. 입력과 산출물이 파일이면 `sources`, `outputs`, 외부 상태면 `skip_if`를 검토한다.
-6. 외부 호출이나 통합 테스트에는 `timeout`을 둔다.
-7. file task header가 formatter-safe한지 확인한다(`#MISE`, `#USAGE`).
-8. monorepo dependency를 `//path:task` 또는 `:task`로 명시한다.
-9. long-running workflow는 외부 orchestrator가 필요한지 판단한다.
-10. `mise tasks validate`와 `mise-review` validator로 확인한다.
+1. Keep each task's responsibility small.
+2. Give every task `description`, `usage` (with `about "mise run <task>: <what it does>"`), and `run`.
+3. Remove `mise exec <tool>@<version> --` from commands that use the `[tools]` version. Keep it only in tasks that need another version.
+4. If the task takes arguments, add `arg` and `flag` to `usage` and read them in the script as `usage_*` variables.
+5. When inputs and outputs are files, consider `sources` and `outputs`; for external state, consider `skip_if`.
+6. Set `timeout` on external calls and integration tests.
+7. Check that file task headers are formatter-safe (`#MISE`, `#USAGE`).
+8. Make monorepo dependencies explicit with `//path:task` or `:task`.
+9. Decide whether long-running workflows need an external orchestrator.
+10. Verify with `mise tasks validate` and the `mise-review` validator.

@@ -1,22 +1,22 @@
 # java-gradle-app
 
-## 언제 쓰는가
+## When to Use
 
-- 일반 Java 애플리케이션
-- `build.gradle` 또는 `build.gradle.kts`를 사용하는 저장소
-- runtime은 `mise`, 프로젝트 실행 진입점은 Gradle wrapper로 가져가고 싶은 경우
+- General Java applications
+- Repositories that use `build.gradle` or `build.gradle.kts`
+- When `mise` should own the runtime and the Gradle wrapper should be the project entry point
 
-## selector 기준
+## Selectors
 
 - Java runtime: `zulu-25`
 - Gradle: `9.8`
 
-2026-10-16 기준 exact candidate는 다음이었다.
+The exact candidates on 2026-10-16 were:
 
 - `mise latest java@zulu-25` -> `zulu-25.36.205.0`
 - `mise latest gradle@9.8` -> `9.8.1`
 
-기존 Java 21 / Gradle 8 프로젝트는 `zulu-21` / `8.14`를 유지하고 단계적으로 올린다.
+Existing Java 21 / Gradle 8 projects keep `zulu-21` / `8.14` and move up step by step.
 
 ## Example `mise.toml`
 
@@ -63,7 +63,7 @@ run = "gradle wrapper"
 
 ## Notes
 
-- 팀 정책상 `java = "25"` 같은 vendor 없는 selector는 쓰지 않는다. mise 2026.10.5부터 vendor 기본값이 바뀌어 같은 값이 다른 build로 해석될 수 있다.
-- wrapper가 실제 build 버전을 정한다. `mise.toml`의 `gradle`은 wrapper 갱신과 개발 환경 정렬용이다.
-- 실제 실행 task는 wrapper를 우선 사용해 repository-local Gradle contract를 따른다.
-- `mise.lock`은 커밋한다.
+- Team policy bans vendorless selectors such as `java = "25"`. Since mise 2026.10.5 the default vendor changed, so the same value can resolve to a different build.
+- The wrapper decides the real build version. The `gradle` in `mise.toml` is for updating the wrapper and aligning the development environment.
+- Execution tasks prefer the wrapper so they follow the repository-local Gradle contract.
+- Commit `mise.lock`.

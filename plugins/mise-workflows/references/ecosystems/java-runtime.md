@@ -1,49 +1,49 @@
 # Java Runtime
 
-## 역할
+## Role
 
-- Java runtime selector와 vendor policy를 다룬다.
-- `.java-version`, `.sdkmanrc` 같은 idiomatic version file과 tracked `mise.toml`의 정합성을 다룬다.
-- build tool 규칙이나 Spring 서비스 관례 자체는 이 문서가 직접 소유하지 않는다.
+- Covers Java runtime selectors and vendor policy.
+- Covers consistency between idiomatic version files such as `.java-version` and `.sdkmanrc` and the tracked `mise.toml`.
+- Does not own build tool rules or Spring service conventions.
 
-## 기본 원칙
+## Principles
 
-- Java는 vendor-qualified selector를 사용한다.
-- vendor가 없는 `21`, `lts`는 정책 허용이 없으면 피한다.
-- runtime 선택과 build tool 선택을 분리한다.
-- `JAVA_HOME`이 암묵적으로 맞을 거라고 가정하지 말고 tool selector와 version file을 함께 확인한다.
+- Use vendor-qualified selectors for Java.
+- Avoid vendorless `21` or `lts` unless policy allows them.
+- Keep runtime selection separate from build tool selection.
+- Do not assume `JAVA_HOME` is right implicitly; check the tool selector and version files together.
 
-## vendor를 명시해야 하는 이유
+## Why the Vendor Must Be Explicit
 
-- vendor가 없는 request는 `java.shorthand_vendor` setting을 따른다.
-- 이 기본값은 mise 2026.10.5에서 `openjdk`에서 `temurin`으로 바뀌었다. 같은 `java = "21"`이 mise 버전에 따라 다른 build로 해석된다.
-- `openjdk` 기준으로 기록된 lockfile entry는 새 기본값과 맞지 않아 `mise install --locked`가 실패할 수 있다.
-- 공식 문서도 shared config에는 vendor를 명시하라고 권장한다.
+- A request without a vendor follows the `java.shorthand_vendor` setting.
+- That default changed from `openjdk` to `temurin` in mise 2026.10.5, so the same `java = "21"` resolves to a different build depending on the mise version.
+- Lockfile entries recorded under `openjdk` no longer match the new default, and `mise install --locked` can fail.
+- The official docs also recommend naming the vendor in shared config.
 
-## 기본 정책
+## Default Policy
 
-- 팀 기본 vendor: `zulu`
-- 신규 프로젝트 추천 selector: `zulu-25` (Java 25 LTS)
-- 기존 Java 21 프로젝트: `zulu-21` 유지. framework와 build tool 지원을 확인한 뒤 25로 올린다
-- tracked config에서 vendor가 없는 `21`, `25`, `lts`는 정책 위반 후보
-- JRE만 필요하면 `temurin-jre-25`처럼 variant를 명시한다
-- 2026-10-16 기준 후보: `mise latest java@zulu-25` → `zulu-25.36.205.0`, `mise latest java@zulu-21` → `zulu-21.52.203.0`
+- Team default vendor: `zulu`
+- Recommended selector for new projects: `zulu-25` (Java 25 LTS)
+- Existing Java 21 projects: keep `zulu-21`. Move to 25 after confirming framework and build tool support
+- Vendorless `21`, `25`, or `lts` in tracked config are policy violation candidates
+- When only a JRE is needed, name the variant explicitly, such as `temurin-jre-25`
+- Candidates as of 2026-10-16: `mise latest java@zulu-25` → `zulu-25.36.205.0`, `mise latest java@zulu-21` → `zulu-21.52.203.0`
 
-## Version File
+## Version Files
 
-- `.java-version`, `.sdkmanrc`는 `idiomatic_version_file_enable_tools`에 `java`를 추가해야 읽힌다.
-- `.java-version`에 vendor 없이 `21`만 있으면 `java.shorthand_vendor`를 따른다. 공유 파일이라면 `mise.toml`을 source of truth로 둔다.
-- `.sdkmanrc`의 vendor 식별자는 mise 이름으로 변환된다(`21.0.9-tem` → `temurin-21.0.9`).
+- `.java-version` and `.sdkmanrc` are read only after adding `java` to `idiomatic_version_file_enable_tools`.
+- A `.java-version` that contains only `21` without a vendor follows `java.shorthand_vendor`. For shared files, keep `mise.toml` as the source of truth.
+- Vendor identifiers in `.sdkmanrc` are mapped to mise names (`21.0.9-tem` → `temurin-21.0.9`).
 
-## 점검 질문
+## Review Questions
 
-- selector가 `zulu-25`처럼 vendor를 명시하는가
-- selector 후보가 `mise ls-remote java zulu-25` 결과와 맞는가
-- `.java-version` 또는 관련 idiomatic file 전략과 충돌하지 않는가
-- build/test workflow가 있으면 `references/ecosystems/java-gradle.md`와 함께 봤는가
+- Does the selector name the vendor, as in `zulu-25`?
+- Does the selector candidate match `mise ls-remote java zulu-25` output?
+- Does it agree with the `.java-version` or related idiomatic file strategy?
+- If there is a build/test workflow, did you read it together with `references/ecosystems/java-gradle.md`?
 
-## 같이 볼 문서
+## Read Together With
 
-- Gradle selector와 wrapper 경계: `references/ecosystems/java-gradle.md`
-- Spring 서비스 관례: `references/ecosystems/spring-service.md`
+- Gradle selector and wrapper boundary: `references/ecosystems/java-gradle.md`
+- Spring service conventions: `references/ecosystems/spring-service.md`
 - Java starter example: `references/examples/java-gradle-app.md`

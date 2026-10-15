@@ -1,17 +1,17 @@
 # python-uv-lib
 
-## 언제 쓰는가
+## When to Use
 
-- Python 라이브러리 또는 package 배포 중심 저장소
-- `pyproject.toml` 기반 build backend와 `uv` workflow를 함께 관리하는 경우
-- local 개발 task보다 build, package, publish 확인 흐름이 더 중요한 경우
+- Python libraries or repositories centered on package distribution
+- When a `pyproject.toml` build backend and a `uv` workflow are managed together
+- When the build, package, and publish checks matter more than local development tasks
 
-## selector 기준
+## Selectors
 
 - Python runtime: `3.14`
 - uv: `0.13`
 
-2026-10-16 기준 exact candidate는 다음이었다.
+The exact candidates on 2026-10-16 were:
 
 - `mise latest python@3.14` -> `3.14.8`
 - `mise latest uv@0.13` -> `0.13.1`
@@ -70,7 +70,7 @@ run = "uv run twine check dist/*"
 
 ## Notes
 
-- application entrypoint보다 build artifact 품질과 publish readiness를 우선한다.
-- `twine`은 dev dependency group에 둔다. 도구로만 쓰고 싶다면 `[tools]`에 `"pypi:twine"`을 선언한다.
-- 실제 publish 자체는 credential handling과 release policy에 맞춰 별도 task로 분리한다. publish credential은 publish task에만 전달한다.
-- 일반 app workflow가 중심이면 `python-uv-app` example을 먼저 시작점으로 잡는다.
+- Prioritize build artifact quality and publish readiness over an application entry point.
+- Put `twine` in a dev dependency group. To use it only as a tool, declare `"pypi:twine"` in `[tools]`.
+- Split the actual publish into a separate task that follows credential handling and release policy. Pass publish credentials only to the publish task.
+- If a general app workflow is central, start from the `python-uv-app` example.

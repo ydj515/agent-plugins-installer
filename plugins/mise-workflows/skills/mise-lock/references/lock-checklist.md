@@ -1,19 +1,19 @@
 # Lock Execution Checklist
 
-## 먼저 읽을 문서
+## Read First
 
 - `../../../references/lockfile.md`
 - `../../../references/version-policy.md`
-- monorepo면 `../../../references/monorepo-workspace.md`
+- For monorepos, `../../../references/monorepo-workspace.md`
 
-## 점검 순서
+## Check Order
 
-1. lock 대상 도구가 `mise.toml`에 선언되어 있는가(`.tool-versions`만 있으면 옮긴다).
-2. `[settings] lockfile = true`가 필요한가, 아니면 `mise lock`으로 한 번 만들면 충분한가.
-3. `mise lock --platform`으로 개발자, CI, image 플랫폼 entry가 모두 있는가.
-4. `mise.lock`과 `.mise/locks` 디렉터리(있다면)를 커밋하는가.
-5. `mise.local.lock`, `mise.*.local.lock`, `.mise/locks/mise.local` 디렉터리가 ignore되어 있는가.
-6. CI가 `mise install --locked`로 설치하는가.
-7. monorepo라면 `[monorepo] lockfile` 정책을 명시했는가.
-8. bump 자동화가 있다면 `MISE_SAFE=1`로 실행하고 diff를 리뷰하는가.
-9. `mise-review` validator의 `MWL*` 진단이 없는가.
+1. Are the tools to lock declared in `mise.toml` (move them if they are only in `.tool-versions`)?
+2. Is `[settings] lockfile = true` needed, or is creating one once with `mise lock` enough?
+3. Does `mise lock --platform` cover every developer, CI, and image platform?
+4. Are `mise.lock` and the `.mise/locks` directory (if present) committed?
+5. Are `mise.local.lock`, `mise.*.local.lock`, and the `.mise/locks/mise.local` directory ignored?
+6. Does CI install with `mise install --locked`?
+7. In a monorepo, is the `[monorepo] lockfile` policy explicit?
+8. If bumps are automated, do they run with `MISE_SAFE=1` and get a reviewed diff?
+9. Are there no `MWL*` diagnostics from the `mise-review` validator?

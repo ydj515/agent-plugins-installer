@@ -1,19 +1,19 @@
 # CI Execution Checklist
 
-## 먼저 읽을 문서
+## Read First
 
 - `../../../references/ci-integration.md`
 - `../../../references/lockfile.md`
-- 필요 시 `../../../references/github-tokens.md`
-- 필요 시 `../../../references/secrets.md`
+- When needed, `../../../references/github-tokens.md`
+- When needed, `../../../references/secrets.md`
 
-## 점검 순서
+## Check Order
 
-1. workflow 파일에 하드코딩된 도구 버전이 없는가.
-2. 설치가 `mise install --locked`(또는 `mise.lock`이 있을 때의 `jdx/mise-action`)로 이루어지는가.
-3. job이 `mise run ci` 같은 task 하나를 호출하고, 단계 구성은 `[tasks]`에 있는가.
-4. cache가 신뢰된 ref에서만 저장되고, lockfile이 있으면 다운로드 저장소(`~/.cache/mise/downloads-cas`)를 cache하는가.
-5. fork PR이나 bot job이 `MISE_SAFE=1`로 config를 읽는가.
-6. GitHub API를 쓰는 이후 step에 token이 전달되는가.
-7. Dockerfile이 `mise.toml`, `mise.lock`, `.mise/locks` 디렉터리를 `mise install`보다 먼저 COPY하는가.
-8. `mise tasks validate`, `mise-review` validator, 필요 시 `mise doctor project`가 초기 단계에 있는가.
+1. Are workflow files free of hardcoded tool versions?
+2. Does installation use `mise install --locked` (or `jdx/mise-action` when `mise.lock` exists)?
+3. Does the job call a single task such as `mise run ci`, with the steps defined in `[tasks]`?
+4. Are caches saved only from trusted refs, and with a lockfile, is the download store (`~/.cache/mise/downloads-cas`) cached?
+5. Do fork PR and bot jobs read config with `MISE_SAFE=1`?
+6. Do later steps that call the GitHub API receive a token?
+7. Does the Dockerfile COPY `mise.toml`, `mise.lock`, and the `.mise/locks` directory before `mise install`?
+8. Do `mise tasks validate`, the `mise-review` validator, and `mise doctor project` (when needed) run early?

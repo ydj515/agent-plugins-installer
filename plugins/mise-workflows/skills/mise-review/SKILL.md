@@ -41,7 +41,7 @@ Do not use this skill as the primary place to restate every runtime or framework
 
 ## Example Requests
 
-- "이 `mise.toml`을 리뷰해줘."
-- "JSON 형식으로 rule violation을 보고해줘."
-- "deprecated된 mise 문법이 있는지 찾아줘."
-- "어느 skill을 읽고 고쳐야 할지 같이 알려줘."
+- "Review this `mise.toml`."
+- "Report rule violations as JSON."
+- "Find deprecated mise syntax."
+- "Tell me which skill to read to fix each issue."

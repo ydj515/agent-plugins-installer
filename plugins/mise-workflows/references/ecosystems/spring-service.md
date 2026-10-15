@@ -1,34 +1,34 @@
 # Spring Service
 
-## 역할
+## Role
 
-- Spring 서비스 profile에 필요한 service-oriented convention을 정리한다.
-- Java runtime과 Gradle build 규칙을 대체하지 않고 조합한다.
+- Collects the service-oriented conventions the Spring service profile needs.
+- Combines with the Java runtime and Gradle build rules instead of replacing them.
 
-## 기본 원칙
+## Principles
 
-- Spring 서비스 판단은 실제 저장소 신호가 있을 때만 적용한다.
-- local DB credentials나 secret은 tracked config 대신 `mise.local.toml`, SOPS 파일, 또는 redacted file loading으로 분리한다.
-- 필수 접속 정보는 `[env]`에 `{ required = "..." }`로 선언해 누락 시 빠르게 실패하게 만든다.
-- `bootRun`과 package lifecycle을 분리해 dev flow와 release flow를 읽기 쉽게 유지한다.
-- 로컬 DB나 broker가 필요하면 docker compose task 또는 experimental `daemons`를 검토하되, experimental 기능은 팀 합의 후 채택한다.
+- Apply Spring service decisions only when the repository shows real signals.
+- Keep local database credentials and secrets out of tracked config, in `mise.local.toml`, SOPS files, or redacted file loading.
+- Declare required connection settings with `{ required = "..." }` so a missing value fails fast. Put it on the task that needs it when other tasks such as tests do not.
+- Keep `bootRun` separate from the package lifecycle so dev and release flows stay readable.
+- If a local database or broker is needed, consider a docker compose task or experimental `daemons`, and adopt experimental features only after team agreement.
 
-## 조합 규칙
+## Composition
 
 - Java runtime: `references/ecosystems/java-runtime.md`
 - Gradle build: `references/ecosystems/java-gradle.md`
-- shared policy: `references/policy-core.md`
-- secret 처리: `references/secrets.md`
+- Shared policy: `references/policy-core.md`
+- Secret handling: `references/secrets.md`
 
-## 점검 질문
+## Review Questions
 
-- 저장소에 `spring-boot`, `@SpringBootApplication`, `application.yml` 같은 실신호가 있는가
-- runtime/build selector 결정은 Java/Gradle 문서에서 먼저 정리했는가
-- service 전용 env/task만 추가하고 generic runtime/build 규칙과 뒤섞지 않았는가
-- Spring Boot 버전이 선택한 Java major를 지원하는가
+- Does the repository have real signals such as `spring-boot`, `@SpringBootApplication`, or `application.yml`?
+- Were the runtime and build selector decisions settled in the Java and Gradle documents first?
+- Did you add only service-specific env and tasks without mixing in generic runtime/build rules?
+- Does the Spring Boot version support the chosen Java major?
 
-## 같이 볼 문서
+## Read Together With
 
-- Java runtime 정책: `references/ecosystems/java-runtime.md`
-- Gradle build 정책: `references/ecosystems/java-gradle.md`
+- Java runtime policy: `references/ecosystems/java-runtime.md`
+- Gradle build policy: `references/ecosystems/java-gradle.md`
 - Spring starter example: `references/examples/java-spring-service.md`
