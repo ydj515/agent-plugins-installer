@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hiring Analyzer"
+  short_description: "Review resumes through seven evidence-based perspectives."
+  default_prompt: "Use $hiring-analyzer to review my resume against a target role and draft an improved version without inventing facts."

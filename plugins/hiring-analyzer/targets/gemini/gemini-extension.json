@@ -1,0 +1,6 @@
+{
+  "name": "hiring-analyzer",
+  "version": "1.0.0",
+  "description": "Review resumes through seven evidence-based perspectives and produce a fact-preserving rewrite with unresolved questions tracked.",
+  "contextFileName": "GEMINI.md"
+}

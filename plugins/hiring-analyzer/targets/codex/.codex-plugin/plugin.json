@@ -1,0 +1,25 @@
+{
+  "name": "hiring-analyzer",
+  "version": "1.0.0",
+  "description": "Review resumes through seven evidence-based perspectives and produce a fact-preserving rewrite with unresolved questions tracked.",
+  "author": {
+    "name": "Dongjin"
+  },
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Hiring Analyzer",
+    "shortDescription": "Review and improve resumes without inventing facts",
+    "longDescription": "Review resumes through seven evidence-based perspectives and produce a fact-preserving rewrite with unresolved questions tracked.",
+    "developerName": "Dongjin",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Review my resume against this target role and draft an improved version without inventing facts."
+    ]
+  }
+}

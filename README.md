@@ -16,6 +16,7 @@ The bundled catalog currently includes these integrations:
 - `mise-workflows`
 - `web-a11y`
 - `architecture-diagram`
+- `hiring-analyzer`
 
 Supported targets:
 
@@ -68,6 +69,7 @@ npx agent-plugins-installer install gemini --scope user --plugins vercel
 npx agent-plugins-installer install codex --scope workspace --plugins mise-workflows
 npx agent-plugins-installer install codex --scope workspace --plugins web-a11y
 npx agent-plugins-installer install claude --scope user --plugins architecture-diagram
+npx agent-plugins-installer install codex --scope workspace --plugins hiring-analyzer
 ```
 
 List installed and available integrations:

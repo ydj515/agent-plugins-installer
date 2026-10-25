@@ -33,6 +33,11 @@
       "name": "architecture-diagram",
       "source": "./.generated/direct/claude/architecture-diagram",
       "description": "HTML architecture diagrams with SVG connectors and resource allocation tables in Claude Code."
+    },
+    {
+      "name": "hiring-analyzer",
+      "source": "./.generated/direct/claude/hiring-analyzer",
+      "description": "Review resumes through seven evidence-based perspectives and produce a fact-preserving rewrite with unresolved questions tracked."
     }
   ]
 }

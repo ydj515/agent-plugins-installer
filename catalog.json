@@ -66,6 +66,17 @@
       "enabledByDefault": true,
       "tags": ["architecture", "diagram", "html", "infrastructure"],
       "groups": ["design", "document"]
+    },
+    {
+      "id": "hiring-analyzer",
+      "title": "Hiring Analyzer",
+      "description": "Review resumes through seven evidence-based perspectives and produce a fact-preserving rewrite with unresolved questions tracked.",
+      "version": "1.0.0",
+      "sourceDir": "plugins/hiring-analyzer",
+      "targets": ["codex", "claude", "gemini"],
+      "enabledByDefault": true,
+      "tags": ["resume", "hiring", "review"],
+      "groups": ["document", "review"]
     }
   ]
 }
