@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.10]
+
+### Highlights
+
+- added a `hiring-analyzer` plugin for evidence-based resume reviews from seven reviewer perspectives and fact-preserving rewrites
+
+### Added
+
+- `hiring-analyzer` plugin with Codex, Claude, and Gemini target manifests and repo marketplace entries
+- `hiring-analyzer` catalog entry and README install example
+
 ## [0.1.9]
 
 ### Highlights
