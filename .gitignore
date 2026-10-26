@@ -5,6 +5,7 @@ node_modules/
 .codex/
 .claude/
 .gemini/
+.agents/skills/
 .generated/
 
 # Packaged tarballs
