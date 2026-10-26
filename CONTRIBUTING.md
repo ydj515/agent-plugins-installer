@@ -1,10 +1,10 @@
-# 기여 가이드
+# Contributing to agent-plugins-installer
 
-`agent-plugins-installer`에 기여해 주셔서 감사합니다. 변경 사항을 제출하기 전에 아래 개발 환경 설정과 검증 절차를 확인해 주세요. 상세한 동작 방식과 타깃별 레이아웃은 [사용 및 아키텍처 가이드](./docs/GUIDE.md)에 정리되어 있습니다.
+Thank you for contributing to `agent-plugins-installer`. Please review the environment setup and verification steps below before submitting changes. For detailed target layouts and marketplace architecture, see the [Usage & Architecture Guide](./docs/GUIDE.md).
 
-## 1. 개발 환경 준비
+## 1. Development Setup
 
-Node.js 버전(`24.19.0`)과 공통 작업은 [`mise.toml`](./mise.toml)에 정의되어 있습니다. 런타임 호환성은 Node.js `20`, `22`, `24`를 지원합니다.
+Node.js (`24.19.0`) and common tasks are defined in [`mise.toml`](./mise.toml). Runtime compatibility is verified across Node.js `20`, `22`, and `24`.
 
 ```bash
 mise trust
@@ -12,31 +12,31 @@ mise install
 mise tasks
 ```
 
-## 2. 코드 및 플러그인 번들 작성 규칙
+## 2. Code & Bundle Guidelines
 
-- **플러그인 소스 구조:** 공통 소스는 [`plugins/<plugin-id>/`](./plugins) 아래에 작성하며, 타깃별 매니페스트 오버레이는 `plugins/<plugin-id>/targets/<codex|claude|gemini>/`에 배치합니다.
-- **카탈로그 및 직접 번들 동기화:** 플러그인 메타데이터를 [`catalog.json`](./catalog.json) 또는 `plugins/`에서 수정한 경우 아래 명령으로 `.generated/direct/` 번들과 루트 마켓플레이스 매니페스트 정합성을 유지하세요.
+- **Plugin Source Structure:** Place shared assets under [`plugins/<plugin-id>/`](./plugins) and target-specific manifest overlays under `plugins/<plugin-id>/targets/<codex|claude|gemini>/`.
+- **Catalog & Direct Bundle Sync:** Whenever you update [`catalog.json`](./catalog.json) or files under `plugins/`, synchronize the generated direct bundles and repository marketplace manifests:
   ```bash
   npm run sync:direct-bundles
   ```
-- **커밋 메시지:** `feat:`, `fix:`, `docs:`, `chore:`, `build:`, `test:` 등 Conventional Commits 형식을 따릅니다.
+- **Commit Messages:** Follow Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `build:`, `test:`).
 
-## 3. 필수 검증
+## 3. Required Verification
 
-모든 변경 사항은 Pull Request를 제출하기 전에 아래 검증 명령을 통과해야 합니다.
+All changes must pass the local verification gate before opening a pull request:
 
 ```bash
 mise run verify
 ```
 
-Node 버전 호환성이나 패키징에 영향을 주는 변경인 경우 매트릭스 테스트를 함께 실행해 주세요.
+If your changes affect runtime compatibility or packaging behavior, also run the multi-version Node.js test matrix:
 
 ```bash
 mise run test-matrix
 ```
 
-## 4. 참고 문서
+## 4. References
 
-- [사용 및 아키텍처 가이드](./docs/GUIDE.md)
-- [구현 계획 및 설계 배경](./docs/IMPLEMENTATION_PLAN.md)
-- [변경 이력 (CHANGELOG)](./CHANGELOG.md)
+- [Usage & Architecture Guide](./docs/GUIDE.md)
+- [Implementation Plan](./docs/IMPLEMENTATION_PLAN.md)
+- [Changelog](./CHANGELOG.md)
