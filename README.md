@@ -1,8 +1,8 @@
 # agent-plugins-installer
 
-[![CI](https://github.com/ydj515/agent-plugins-installer/actions/workflows/ci.yml/badge.svg)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/ci.yml)
-[![Release Publish Package](https://github.com/ydj515/agent-plugins-installer/actions/workflows/release-publish.yml/badge.svg)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/release-publish.yml)
-[![Sync Development Standards](https://github.com/ydj515/agent-plugins-installer/actions/workflows/sync-dev-standards.yml/badge.svg)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/sync-dev-standards.yml)
+[![CI](https://github.com/ydj515/agent-plugins-installer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/ci.yml)
+[![Release Publish Package](https://github.com/ydj515/agent-plugins-installer/actions/workflows/release-publish.yml/badge.svg?event=release)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/release-publish.yml)
+[![Sync Development Standards](https://github.com/ydj515/agent-plugins-installer/actions/workflows/sync-dev-standards.yml/badge.svg?branch=main)](https://github.com/ydj515/agent-plugins-installer/actions/workflows/sync-dev-standards.yml)
 [![npm version](https://img.shields.io/npm/v/agent-plugins-installer.svg?logo=npm)](https://www.npmjs.com/package/agent-plugins-installer)
 [![Node.js](https://img.shields.io/badge/Node.js-24.19.0%20(%3E%3D20.0.0)-339933?logo=nodedotjs&logoColor=white)](./mise.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)

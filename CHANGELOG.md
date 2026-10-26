@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 This changelog is based on the versioned states visible in this repository's git history.
 
+## [0.1.11]
+
+### Highlights
+
+- restructured the root `README.md` into a concise open-source overview and moved target-specific architecture details into `docs/GUIDE.md`
+- added `CONTRIBUTING.md` and the `sync-dev-standards.yml` workflow for shared development standards synchronization
+
+### Added
+
+- `docs/GUIDE.md` covering target-specific provisioning behavior, repository marketplace manifests, local verification, and CI/release workflows
+- `CONTRIBUTING.md` documenting `mise` setup, bundle synchronization, and verification rules
+- `.github/workflows/sync-dev-standards.yml` and `.dev-standards/config.yml` for automated development standards synchronization
+
+### Changed
+
+- streamlined `README.md` with CI/release/standards status badges, catalog overview table, quick start commands, and documentation links
+
 ## [0.1.10]
 
 ### Highlights
