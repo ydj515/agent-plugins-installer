@@ -125,6 +125,18 @@
     ".dev-standards/styleguide.md": {
       "ownership": "managed",
       "sha256": "f8ae24767035ce2fd232cc6aa8a8cba72287da9b6b1a4ac38d6deb61ee412371"
+    },
+    ".worktreeinclude": {
+      "ownership": "project-owned"
+    },
+    "AGENTS.md": {
+      "ownership": "project-owned"
+    },
+    "CLAUDE.md": {
+      "ownership": "project-owned"
+    },
+    "GEMINI.md": {
+      "ownership": "project-owned"
     }
   }
 }
