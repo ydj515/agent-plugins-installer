@@ -4,7 +4,7 @@ Thank you for contributing to `agent-plugins-installer`. Please review the envir
 
 ## 1. Development Setup
 
-Node.js (`24.19.0`) and common tasks are defined in [`mise.toml`](./mise.toml). Runtime compatibility is verified across Node.js `20`, `22`, and `24`.
+Node.js (`24.22.3`) and common tasks are defined in [`mise.toml`](./mise.toml). Runtime compatibility is verified across Node.js `20`, `22`, and `24`.
 
 ```bash
 mise trust

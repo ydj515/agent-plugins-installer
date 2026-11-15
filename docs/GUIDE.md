@@ -96,7 +96,7 @@ npm run sync:direct-bundles
 
 ## Local Development & Verification
 
-Node.js (`24.19.0`) and development tasks are configured in [`mise.toml`](../mise.toml):
+Node.js (`24.22.3`) and development tasks are configured in [`mise.toml`](../mise.toml):
 
 ```bash
 mise trust

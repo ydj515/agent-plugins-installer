@@ -19,7 +19,7 @@ jobs:
         node-version:
           - 20
           - 22
-          - 24
+          - "24.22.3"
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -87,7 +87,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: "24.22.3"
           registry-url: https://registry.npmjs.org
 
       - name: Show Node and npm versions

@@ -18,7 +18,7 @@ jobs:
         node-version:
           - 20
           - 22
-          - 24
+          - "24.22.3"
     steps:
       - name: Checkout
         uses: actions/checkout@v5
